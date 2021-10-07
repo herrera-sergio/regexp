@@ -650,7 +650,7 @@ public class Configuration {
         strategyParameters.put("threads", "4");
         configuration.setStrategyParameters(strategyParameters);
         DatasetContainer datasetContainer = new DatasetContainer();
-        datasetContainer.setPath("dataset/replace_twitter_anonymized.csv");
+        datasetContainer.setPath("dataset/conflicts.csv");
         List<Range> tmpranges = new ArrayList<>();
         tmpranges.add(new Range(0,100));
         tmpranges.add(new Range(105,200));

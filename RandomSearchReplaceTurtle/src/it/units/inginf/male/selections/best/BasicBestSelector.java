@@ -64,6 +64,8 @@ public class BasicBestSelector implements BestSelector {
         results.setBestSolution(best);
         if (best != null) {
             System.out.println("Best on validation: " + best.getSolution());
+            System.out.println("RegExp: " + best.getRegex());
+            System.out.println("Replacement: " + best.getReplacement());
             System.out.println("******Stats on training******");
             System.out.println("Distance error rate: " + best.getTrainingPerformances().get("distance error rate"));
             System.out.println("Count error rate: " + best.getTrainingPerformances().get("count error rate"));

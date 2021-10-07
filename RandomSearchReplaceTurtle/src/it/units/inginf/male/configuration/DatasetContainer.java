@@ -233,6 +233,7 @@ public class DatasetContainer {
 
         List<String> columns;
         while((columns =reader.read()) != null){
+            //System.out.println("columns:"+columns.get(0));
             if(columns.size() != 2){
                 throw new RuntimeException();
             }

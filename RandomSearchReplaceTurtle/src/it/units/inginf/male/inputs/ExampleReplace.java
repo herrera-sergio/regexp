@@ -36,7 +36,19 @@ public class ExampleReplace {
 
     public ExampleReplace(String string, String targetString) {
         this.string = string;
+        if(this.string==null){
+            this.string=new String(" ");
+        }else if(this.string.isEmpty()){
+            this.string=new String(" ");
+        }
+        
         this.targetString = targetString;
+        if(this.targetString==null){
+            this.targetString=new String(" ");
+        }
+        else if(this.targetString.isEmpty()){
+            this.targetString=new String(" ");
+        }
     }
 
     public String string;
