@@ -1,6 +1,6 @@
 /*
- * Copyright (C) 2018 Machine Learning Lab - University of Trieste, 
- * Italy (http://machinelearning.inginf.units.it/)  
+ * Copyright (C) 2018 Machine Learning Lab - University of Trieste,
+ * Italy (http://machinelearning.inginf.units.it/)
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -26,25 +26,8 @@ import it.units.inginf.male.tree.RegexRange;
 import it.units.inginf.male.tree.operator.Concatenator;
 import it.units.inginf.male.tree.operator.Quantifier;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.OutputStreamWriter;
-import java.io.Writer;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Objects;
-import java.util.Queue;
-import java.util.Set;
-import java.util.TreeSet;
+import java.io.*;
+import java.util.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -64,6 +47,8 @@ public class Utils {
     public static final String ANSI_WHITE = "\u001B[37m";
 
     private static final List<String> colors = Arrays.asList(ANSI_GREEN, ANSI_PURPLE, ANSI_CYAN, ANSI_RED);
+    private static transient final Set<Character> quoteList = new TreeSet<Character>(
+            Arrays.asList(new Character[]{'?', '+', '*', '.', '[', ']', '\\', '$', '(', ')', '^', '{', '|', '-', '&'}));
 
     public static String getCoolForestRapresentation(Forest forest) {
         StringBuilder sb = new StringBuilder();
@@ -151,6 +136,136 @@ public class Utils {
         // our last action in the above loop was to switch d and p, so p now
         // actually has the most recent cost counts
         return p[n];
+    }
+
+    public static int computeUkkonenDistance(String a, String b, Integer threshold) {
+        if (a.equals(b)) {
+            return 0;
+        }
+
+        threshold = threshold != null ? threshold : 1111111111;
+
+        if (a.length() > b.length()) {
+            // Swap a and b so b longer or same length as a
+            String tmp = a;
+            a = b;
+            b = tmp;
+        }
+
+        int aLen = a.length();
+        int bLen = b.length();
+
+        // Performing suffix trimming:
+        // We can linearly drop suffix common to both strings since they
+        // don't increase distance at all
+        // Note: `~-` is the bitwise way to perform a `- 1` operation
+        while (aLen > 1 && (a.charAt(aLen - 1) == b.charAt(bLen - 1))) {
+            aLen--;
+            bLen--;
+        }
+
+        if (aLen == 1) {
+            return Math.min(bLen, threshold);
+        }
+
+        // Performing prefix trimming
+        // We can linearly drop prefix common to both strings since they
+        // don't increase distance at all
+        var tStart = 0;
+        while (tStart < aLen && a.charAt(tStart) == b.charAt(tStart)) {
+            tStart++;
+        }
+
+        aLen -= tStart;
+        bLen -= tStart;
+
+        if (aLen == 0) {
+            return Math.min(bLen, threshold);
+        }
+
+        threshold = Math.min(bLen, threshold);
+
+        int dLen = bLen - aLen;
+
+        if (threshold < dLen) {
+            return threshold;
+        }
+
+        // floor(min(threshold, aLen) / 2)) + 2
+        int ZERO_K = ((Math.min(aLen, threshold)) >> 1) + 2;
+
+        int arrayLength = dLen + ZERO_K * 2 + 2;
+        int[] currentRow = new int[arrayLength];
+        int[] nextRow = new int[arrayLength];
+        for (var i = 0; i < arrayLength; i++) {
+            currentRow[i] = -1;
+            nextRow[i] = -1;
+        }
+
+        char[] aCharCodes = new char[aLen];
+        char[] bCharCodes = new char[bLen];
+
+        int i;
+        int t;
+        for (i = 0, t = tStart; i < aLen; i++, t++) {
+            aCharCodes[i] = a.charAt(t);
+            bCharCodes[i] = b.charAt(t);
+        }
+
+        while (i < bLen) {
+            bCharCodes[i++] = b.charAt(t++);
+        }
+
+        i = 0;
+        var conditionRow = dLen + ZERO_K;
+        var endMax = conditionRow << 1;
+        do {
+            i++;
+
+            var tmp = currentRow;
+            currentRow = nextRow;
+            nextRow = tmp;
+
+            int start;
+            int previousCell;
+            int currentCell = -1;
+            int nextCell;
+
+            if (i <= ZERO_K) {
+                start = -i + 1;
+                nextCell = i - 2;
+            } else {
+                start = i - (ZERO_K << 1) + 1;
+                nextCell = currentRow[ZERO_K + start];
+            }
+
+            int end;
+            if (i <= conditionRow) {
+                end = i;
+                nextRow[ZERO_K + i] = -1;
+            } else {
+                end = endMax - i;
+            }
+
+            for (int k = start, rowIndex = start + ZERO_K; k < end; k++, rowIndex++) {
+                previousCell = currentCell;
+                currentCell = nextCell;
+                nextCell = currentRow[rowIndex + 1];
+
+                // max(t, previousCell, nextCell + 1)
+                t = currentCell + 1;
+                t = Math.max(t, previousCell);
+                t = Math.max(t, nextCell + 1);
+
+                while (t < aLen && t + k < bLen && aCharCodes[t] == bCharCodes[t + k]) {
+                    t++;
+                }
+
+                nextRow[rowIndex] = t;
+            }
+        } while (nextRow[conditionRow] < aLen && i <= threshold);
+
+        return i - 1;
     }
 
     public static float[] calculateMeanFitness(List<Ranking> population) {
@@ -247,9 +362,9 @@ public class Utils {
         return 100 * (double) newRegexesCount / (double) populationB.size();
     }
 
-    //remove empty extractions 
+    //remove empty extractions
     public static void removeEmptyExtractions(List<Bounds> extractions) {
-        for (Iterator<Bounds> it = extractions.iterator(); it.hasNext();) {
+        for (Iterator<Bounds> it = extractions.iterator(); it.hasNext(); ) {
             Bounds bounds = it.next();
             if (bounds.size() == 0) {
                 it.remove();
@@ -277,9 +392,6 @@ public class Utils {
         String pre = (si ? "kMGTPE" : "KMGTPE").charAt(exp - 1) + (si ? "" : "i");
         return String.format("%.1f %sB", bytes / Math.pow(unit, exp), pre);
     }
-
-    private static transient final Set<Character> quoteList = new TreeSet<Character>(
-            Arrays.asList(new Character[]{'?', '+', '*', '.', '[', ']', '\\', '$', '(', ')', '^', '{', '|', '-', '&'}));
 
     /**
      * Returns a set with all n-grams; 1<n<4
@@ -429,7 +541,7 @@ public class Utils {
         });
 
         //filter
-        for (Iterator<Pair<Bounds, Bounds>> iterator = mappings.iterator(); iterator.hasNext();) {
+        for (Iterator<Pair<Bounds, Bounds>> iterator = mappings.iterator(); iterator.hasNext(); ) {
             Pair<Bounds, Bounds> next = iterator.next();
             Bounds sourcePiece = next.getFirst();
             Bounds targetPiece = next.getSecond();
