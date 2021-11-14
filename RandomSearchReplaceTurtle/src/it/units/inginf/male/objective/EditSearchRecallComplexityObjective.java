@@ -67,7 +67,7 @@ public class EditSearchRecallComplexityObjective implements Objective {
                 ExampleReplace example = dataSetView.getExample(exampleIndex);
                 ReplaceResult replaceOutcome = evaluate.get(exampleIndex);
                 String outcome = replaceOutcome.getReplacedString();
-                fitnessEdit += Utils.computeLevenshteinDistance(example.targetString,outcome);
+                fitnessEdit += Utils.computeUkkonenDistance(example.targetString,outcome, Math.max(example.targetString.length(), outcome.length()));
                 
                 //Recall part
                 Bounds changedBoundsInString = example.getChangedBeforeAndAfterBounds();

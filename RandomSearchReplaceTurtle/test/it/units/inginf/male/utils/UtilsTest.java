@@ -21,8 +21,16 @@ import it.units.inginf.male.tree.Constant;
 import it.units.inginf.male.tree.Node;
 import it.units.inginf.male.tree.operator.Concatenator;
 import it.units.inginf.male.tree.operator.MatchOneOrMore;
+
+import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Locale;
+import java.util.Random;
+
+import me.xdrop.fuzzywuzzy.FuzzySearch;
+import org.apache.commons.text.similarity.FuzzyScore;
 import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;
@@ -43,6 +51,73 @@ public class UtilsTest {
         assertEquals(2,Utils.computeLevenshteinDistance("prova","ova"));
         assertEquals(1,Utils.computeLevenshteinDistance("prova","prxva"));
         assertEquals(0,Utils.computeLevenshteinDistance("",""));
+
+        FuzzyScore fuzzyScore = new FuzzyScore(Locale.ENGLISH);
+        long startFuzzy = System.nanoTime();
+        System.out.println(fuzzyScore.fuzzyScore("prov", "provaty"));
+        long timeFuzzy = System.nanoTime() - startFuzzy;
+
+        long startLevensthein = System.nanoTime();
+        System.out.println(Utils.computeLevenshteinDistance("provaxjksdnvjksndjkvnsjknvvjkkbvsdbjvsiosfioahiofhdiohfdifhsdiohfiosdhfiosdhfiohsdiofhsdhijkbvsdjkbvjksdbvjksbvjksbdxxprovaxjksdnvjksndjkvnsjknvvjkkbvsdbjvsiosfioahiofhdiohfdifhsdiohfiosdhfiosdhfiohsdiofhsdhijkbvsdjkbvjksdbvjksbvjksbdxx","provayy"));
+        long timeLevensthein = System.nanoTime() - startLevensthein;
+
+        System.out.println("Fuzzy " +  timeFuzzy);
+        System.out.println("Levensthein " + timeLevensthein);
+        System.out.println("TIME DIFFERENCE " + (timeLevensthein - timeFuzzy));
+    }
+
+    @Test
+    public void testcomputeLUkkonenDistance() {
+        assertEquals(6,Utils.computeUkkonenDistance("Ukkonen","Levenshtein", 6));
+        assertEquals(8,Utils.computeUkkonenDistance("Ukkonen","Levenshtein", 10));
+        assertEquals(8,Utils.computeUkkonenDistance("Ukkonen","Levenshtein", null));
+        assertEquals(Utils.computeUkkonenDistance("Ukkonen","Levenshtein", 10), Utils.computeLevenshteinDistance("Ukkonen","Levenshtein"));
+//        assertEquals(3,Utils.computeUkkonenDistance("prova","provaxxx"));
+//        assertEquals(1,Utils.computeUkkonenDistance("prov","prova"));
+//        assertEquals(3,Utils.computeUkkonenDistance("ov","prova"));
+//        assertEquals(2,Utils.computeUkkonenDistance("prova","ova"));
+//        assertEquals(1,Utils.computeUkkonenDistance("prova","prxva"));
+//        assertEquals(0,Utils.computeUkkonenDistance("",""));
+
+
+
+        int better = 0;
+        for(int i= 0; i < 300; i++){
+
+            byte[] array = new byte[i+1]; // length is bounded by 7
+            new Random().nextBytes(array);
+            String s1 = new String(array, StandardCharsets.UTF_8);
+            new Random().nextBytes(array);
+            String s2 = new String(array, StandardCharsets.UTF_8);
+
+            System.out.println("S1 " + s1 + " S2" + s2);
+
+            long startFuzzy = System.nanoTime();
+            System.out.println(Utils.computeUkkonenDistance(s1,s2, i));
+            long timeFuzzy = System.nanoTime() - startFuzzy;
+
+            long startLevensthein = System.nanoTime();
+            System.out.println(Utils.computeLevenshteinDistance(s1, s2));
+            long timeLevensthein = System.nanoTime() - startLevensthein;
+
+            if(timeFuzzy < timeLevensthein){
+                better++;
+            }
+        }
+
+        System.out.println("better "  + better);
+
+        long startFuzzy = System.nanoTime();
+        System.out.println(Utils.computeUkkonenDistance("provajkdhusdhvuiduihvuisdbvuibdusihcuisdhcuihsduichuisdhcuihsduichsduihcuisdhcuisdhcuisdhuisdhuicduhhsduihcisdsduiprovajkdhusdhvuiduihvuisdbvuibdusihcuisdhcuihsduichuisdhcuihsduichsduihcuisdhcuisdhcuisdhuisdhuicduhhsduihcisdsdui","provajkdhusdhvuiduihvuisdbvuibdusihcuisdhcuihsduichuisdhcuihsduichsduihcuisdhcuisdhcuisdhuisdhuicduhhsduihcisdsduiprovajkdhusdhvuiduihvuisdbvuibdusihcuisdhcuihsduichuisdhcuihsduichsduihcuisdhcuisdhcuisdhuisdhuicduhhsduihcisdsduiprovaxxxxxxxxxxxxxxxxxxxxxajskhchuighaishchuiahsihaisuh", null));
+        long timeFuzzy = System.nanoTime() - startFuzzy;
+
+        long startLevensthein = System.nanoTime();
+        System.out.println(Utils.computeLevenshteinDistance("provajkdhusdhvuiduihvuisdbvuibdusihcuisdhcuihsduichuisdhcuihsduichsduihcuisdhcuisdhcuisdhuisdhuicduhhsduihcisdsduiprovajkdhusdhvuiduihvuisdbvuibdusihcuisdhcuihsduichuisdhcuihsduichsduihcuisdhcuisdhcuisdhuisdhuicduhhsduihcisdsdui","provajkdhusdhvuiduihvuisdbvuibdusihcuisdhcuihsduichuisdhcuihsduichsduihcuisdhcuisdhcuisdhuisdhuicduhhsduihcisdsduiprovajkdhusdhvuiduihvuisdbvuibdusihcuisdhcuihsduichuisdhcuihsduichsduihcuisdhcuisdhcuisdhuisdhuicduhhsduihcisdsduiprovaxxxxxxxxxxxxxxxxxxxxxajskhchuighaishchuiahsihaisuh"));
+        long timeLevensthein = System.nanoTime() - startLevensthein;
+
+        System.out.println("Ukkonen " +  timeFuzzy);
+        System.out.println("Levensthein " + timeLevensthein);
+        System.out.println("TIME DIFFERENCE " + (timeLevensthein - timeFuzzy));
     }
     
     @Test
