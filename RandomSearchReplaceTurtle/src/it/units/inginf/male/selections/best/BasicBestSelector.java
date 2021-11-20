@@ -63,21 +63,21 @@ public class BasicBestSelector implements BestSelector {
         }
         results.setBestSolution(best);
         if (best != null) {
-            System.out.println("Best on validation: " + best.getSolution());
-            System.out.println("RegExp: " + best.getRegex());
-            System.out.println("Replacement: " + best.getReplacement());
-            System.out.println("******Stats on training******");
-            System.out.println("Distance error rate: " + best.getTrainingPerformances().get("distance error rate"));
-            System.out.println("Count error rate: " + best.getTrainingPerformances().get("count error rate"));
-            System.out.println("******Stats on validation******");
-            System.out.println("Distance error rate: " + best.getValidationPerformances().get("distance error rate"));
-            System.out.println("Count error rate: " + best.getValidationPerformances().get("count error rate"));
-            System.out.println("******Stats on learning******");
-            System.out.println("Distance error rate: " + best.getLearningPerformances().get("distance error rate"));
-            System.out.println("Count error rate: " + best.getLearningPerformances().get("count error rate"));
-            System.out.println("******Stats on testing******");
-            System.out.println("Distance error rate: " + best.getTestingPerformances().get("distance error rate"));
-            System.out.println("Count error rate: " + best.getTestingPerformances().get("count error rate"));
+//            System.out.println("Best on validation: " + best.getSolution());
+//            System.out.println("RegExp: " + best.getRegex());
+//            System.out.println("Replacement: " + best.getReplacement());
+//            System.out.println("******Stats on training******");
+//            System.out.println("Distance error rate: " + best.getTrainingPerformances().get("distance error rate"));
+//            System.out.println("Count error rate: " + best.getTrainingPerformances().get("count error rate"));
+//            System.out.println("******Stats on validation******");
+//            System.out.println("Distance error rate: " + best.getValidationPerformances().get("distance error rate"));
+//            System.out.println("Count error rate: " + best.getValidationPerformances().get("count error rate"));
+//            System.out.println("******Stats on learning******");
+//            System.out.println("Distance error rate: " + best.getLearningPerformances().get("distance error rate"));
+//            System.out.println("Count error rate: " + best.getLearningPerformances().get("count error rate"));
+//            System.out.println("******Stats on testing******");
+//            System.out.println("Distance error rate: " + best.getTestingPerformances().get("distance error rate"));
+//            System.out.println("Count error rate: " + best.getTestingPerformances().get("count error rate"));
         }
     }
 }

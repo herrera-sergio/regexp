@@ -70,7 +70,7 @@ public class Main {
                 //Call the createTrainingCVS method
                 group=ConflictReader.load(prop.getProperty("conflict_file"), groupId);
 
-                System.out.println("Conflict Group: "+group.toString());
+//                System.out.println("Conflict Group: "+group.toString());
 
                 ConflictWriter.write(prop.getProperty("dataset_file"), group);
             }
@@ -89,8 +89,8 @@ public class Main {
                 if(group.getConflicts().size()>=3){
                     group.randomizedConflicts();
                     solution2=getBestSolution(prop,group,groupId);
-                    System.out.println("Group:"+groupId+"Solution 1: ("+solution1.getRegex()+" - "+solution1.getReplacement()+")");
-                    System.out.println("Group:"+groupId+"Solution 2: ("+solution2.getRegex()+" - "+solution2.getReplacement()+")");
+//                    System.out.println("Group:"+groupId+"Solution 1: ("+solution1.getRegex()+" - "+solution1.getReplacement()+")");
+//                    System.out.println("Group:"+groupId+"Solution 2: ("+solution2.getRegex()+" - "+solution2.getReplacement()+")");
 
                     if(solution1!=null && solution2!=null){
                         if(solution1.getRegex().equals(solution2.getRegex())){
@@ -129,7 +129,7 @@ public class Main {
     }
     
     private static FinalSolution getBestSolution(Properties prop, ConflictGroup group, String groupId) throws IOException, Exception{
-            System.out.println("Conflict Group: "+group.toString());
+          //  System.out.println("Conflict Group: "+group.toString());
 
             ConflictWriter.write(prop.getProperty("dataset_file"), group);
 
@@ -137,9 +137,9 @@ public class Main {
 
             Configuration configuration = Configurator.configure(prop.getProperty("regex_configuration"),prop.getProperty("dataset_file"),group);
 
-            System.out.println("Dataset training:"+ configuration.getDatasetContainer().getTrainingDataset().getExamples());
-            System.out.println("Dataset validation:"+ configuration.getDatasetContainer().getValidationDataset().getExamples());
-            System.out.println("Dataset testing:"+ configuration.getDatasetContainer().getTestingDataset().getExamples());
+//            System.out.println("Dataset training:"+ configuration.getDatasetContainer().getTrainingDataset().getExamples());
+//            System.out.println("Dataset validation:"+ configuration.getDatasetContainer().getValidationDataset().getExamples());
+//            System.out.println("Dataset testing:"+ configuration.getDatasetContainer().getTestingDataset().getExamples());
 
             Logger.getLogger("").addHandler(new FileHandler(new File(configuration.getOutputFolder(), "log.xml").getCanonicalPath()));
             Results results = new Results(configuration);
@@ -159,7 +159,7 @@ public class Main {
     }
 
     private static void printUsage() {
-        System.out.println("Usage: java -jar \"Random_Regex_Turtle.jar\" config_path groups");
+     //   System.out.println("Usage: java -jar \"Random_Regex_Turtle.jar\" config_path groups");
     }
     
     private void createTrainingCVS(String group, String outputFile){
