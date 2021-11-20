@@ -55,17 +55,17 @@ public class Json2Postprocessor implements Postprocessor {
         if (config.getEvaluator() instanceof CachedCoevolutionaryEvaluator) {
             CachedCoevolutionaryEvaluator evaluator = (CachedCoevolutionaryEvaluator) config.getEvaluator();
             long cacheSize = evaluator.getCacheSizeBytes();
-         //   System.out.println("Evaluator cache size: " + Utils.humanReadableByteCount(cacheSize, true));
-         //   System.out.println("Evaluator cache number entries: " + evaluator.getCacheSize());
+            System.out.println("Evaluator cache size: " + Utils.humanReadableByteCount(cacheSize, true));
+            System.out.println("Evaluator cache number entries: " + evaluator.getCacheSize());
         }
         if (config.getObjective() instanceof CacheInterface) {
             CacheInterface cachedObjective = (CacheInterface) config.getObjective();
             long cacheSize = cachedObjective.getCacheSizeBytes();
-//            System.out.println("Objective cache size: " + Utils.humanReadableByteCount(cacheSize, true));
-//            System.out.println("Objective cache number entries: " + cachedObjective.getCacheSize());
+            System.out.println("Objective cache size: " + Utils.humanReadableByteCount(cacheSize, true));
+            System.out.println("Objective cache number entries: " + cachedObjective.getCacheSize());
         }
         
-        //System.out.println("Start evaluating results...");
+        System.out.println("Start evaluating results...");
         //crunches the results file and find out the best individual
         config.getBestSelector().elaborate(results);
         results.setOverallExecutionTimeMillis(timeTaken);
@@ -87,7 +87,7 @@ public class Json2Postprocessor implements Postprocessor {
         results.setNumberReplacements(numberReplacements);
         int numberExamples = config.getDatasetContainer().getTrainingDataset().getNumberExamples();
         results.setNumberExamples(numberExamples);
-      //  System.out.println("Saving results to file...");
+        System.out.println("Saving results to file...");
         save(results);
 
         //save(results);
@@ -95,7 +95,7 @@ public class Json2Postprocessor implements Postprocessor {
                 TimeUnit.MILLISECONDS.toHours(timeTaken),
                 TimeUnit.MILLISECONDS.toMinutes(timeTaken) - TimeUnit.HOURS.toMinutes(TimeUnit.MILLISECONDS.toHours(timeTaken)),
                 TimeUnit.MILLISECONDS.toSeconds(timeTaken) - TimeUnit.MINUTES.toSeconds(TimeUnit.MILLISECONDS.toMinutes(timeTaken)));
-       // System.out.println("Time taken: " + time);
+        System.out.println("Time taken: " + time);
     }
 
     private void saveFile(String text, String pathOfFile) {

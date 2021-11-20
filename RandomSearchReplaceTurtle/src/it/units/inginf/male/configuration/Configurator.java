@@ -75,7 +75,7 @@ public class Configurator {
         int testingUpperLimit=0;
             
         
-    //    System.out.println("Conflict Group Size: -------------"+conflictGroup.getConflicts().size());
+        System.out.println("Conflict Group Size: -------------"+conflictGroup.getConflicts().size());
         if(conflictGroup.getConflicts().size()<=3){
             training.add(new Range(0,0));
             configuration.getDatasetContainer().setTraining(training);
@@ -112,18 +112,18 @@ public class Configurator {
                 firstDigit=((conflictGroup.getConflicts().size()-1)%10)%2;
             }
             
-         //   System.out.println("first-"+firstDigit+"last-"+lastDigit);
+            System.out.println("first-"+firstDigit+"last-"+lastDigit);
             
             if(firstDigit==0){
                 System.out.print("even-");
                 if(lastDigit==0){
-               //     System.out.println("-even");
+                    System.out.println("-even");
                     trainingUpperlimit=(int) Math.ceil(conflictGroup.getConflicts().size()*.45);
                     validationUpperLimit=(int) Math.floor(conflictGroup.getConflicts().size()*.45);
                     testingUpperLimit=(int) Math.ceil(conflictGroup.getConflicts().size()*.10);
                 }
                 else{
-                //    System.out.println("-odd");
+                    System.out.println("-odd");
                     trainingUpperlimit=(int) Math.floor(conflictGroup.getConflicts().size()*.45);
                     validationUpperLimit=(int) Math.floor(conflictGroup.getConflicts().size()*.45);
                     testingUpperLimit=(int) Math.ceil(conflictGroup.getConflicts().size()*.10);

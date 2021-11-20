@@ -53,10 +53,10 @@ public class JsonPostProcessor implements Postprocessor {
         if (config.getEvaluator() instanceof CachedCoevolutionaryEvaluator) {
             CachedCoevolutionaryEvaluator evaluator = (CachedCoevolutionaryEvaluator)config.getEvaluator();
             long cacheSize = evaluator.getCacheSizeBytes();            
-//            System.out.println("Cache size: "+Utils.humanReadableByteCount(cacheSize, true));
-//            System.out.println("Cache entry: "+evaluator.getCacheSize());
+            System.out.println("Cache size: "+Utils.humanReadableByteCount(cacheSize, true));
+            System.out.println("Cache entry: "+evaluator.getCacheSize());
         }
-//        System.out.println("Start evaluating results...");
+        System.out.println("Start evaluating results...");
         config.getBestSelector().elaborate(results);
         results.setOverallExecutionTimeMillis(timeTaken);
        //Populate knowledge avaiable 
@@ -74,8 +74,8 @@ public class JsonPostProcessor implements Postprocessor {
                 TimeUnit.MILLISECONDS.toHours(timeTaken),
                 TimeUnit.MILLISECONDS.toMinutes(timeTaken) - TimeUnit.HOURS.toMinutes(TimeUnit.MILLISECONDS.toHours(timeTaken)),
                 TimeUnit.MILLISECONDS.toSeconds(timeTaken) - TimeUnit.MINUTES.toSeconds(TimeUnit.MILLISECONDS.toMinutes(timeTaken)));
-//        System.out.println("Time taken: "+time);
-
+        System.out.println("Time taken: "+time);
+        
     }
 
     private void saveToJson(Results results, String pathOfFile) {

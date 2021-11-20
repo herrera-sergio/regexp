@@ -100,7 +100,7 @@ public class CoolTextualExecutionListener implements ExecutionListener, Executio
         int doneAll = 20 * overallDone / overallTotal;
         double percAll = Math.round(1000 * overallDone / (double) overallTotal) / 10.0;
 
-       // System.out.println(header);
+        System.out.println(header);
         if (isEvaluatorCached || isObjectiveCached) {
             CacheInterface cacheStats;
             if (isObjectiveCached) {
@@ -118,11 +118,11 @@ public class CoolTextualExecutionListener implements ExecutionListener, Executio
             if (remove.contains(jobId)) {
                 color = Utils.ANSI_GREEN;
             }
-           // System.out.println(color + screen.get(jobId) + Utils.ANSI_RESET);
+            System.out.println(color + screen.get(jobId) + Utils.ANSI_RESET);
         }
-//
-//        System.out.println("Best: " + Utils.printableRegex(best));
-//        System.out.println(Utils.printPopulation(topTen));
+
+        System.out.println("Best: " + Utils.printableRegex(best));
+        System.out.println(Utils.printPopulation(topTen));
 
     }
 
