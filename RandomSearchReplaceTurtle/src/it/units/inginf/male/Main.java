@@ -101,7 +101,11 @@ public class Main {
                             if (!solution1.getRegex().isEmpty()) {
                                 Regexp regexp1 = new Regexp(solution1.getRegex(), solution1.getReplacement());
                                 regexList.add(regexp1);
-                                RegexWriter.save(prop.getProperty("regex_tree_file"), group.getGroupID(), Utils.serializeTree(solution1.getRegexTree()), Utils.serializeTree(solution1.getReplacementTree()));
+                                try {
+                                    RegexWriter.save(prop.getProperty("regex_tree_file"), group.getGroupID(), Utils.serializeTree(solution1.getRegexTree()), Utils.serializeTree(solution1.getReplacementTree()));
+                                } catch (Exception e) {
+                                    e.printStackTrace();
+                                }
                                 if (!solution2.getRegex().isEmpty()) {
                                     Regexp regexp2 = new Regexp(solution2.getRegex(), solution2.getReplacement());
                                     regexList.add(regexp2);
@@ -109,7 +113,11 @@ public class Main {
                             } else if (!solution2.getRegex().isEmpty()) {
                                 Regexp regexp2 = new Regexp(solution2.getRegex(), solution2.getReplacement());
                                 regexList.add(regexp2);
-                                RegexWriter.save(prop.getProperty("regex_tree_file"), group.getGroupID(), Utils.serializeTree(solution2.getRegexTree()), Utils.serializeTree(solution2.getReplacementTree()));
+                                try {
+                                    RegexWriter.save(prop.getProperty("regex_tree_file"), group.getGroupID(), Utils.serializeTree(solution2.getRegexTree()), Utils.serializeTree(solution2.getReplacementTree()));
+                                } catch (Exception e) {
+                                    e.printStackTrace();
+                                }
                             }
                         }
                     }
@@ -122,8 +130,11 @@ public class Main {
                     Regexp regexp1 = new Regexp(solution1.getRegex(), solution1.getReplacement());
                     regexList.add(regexp1);
                     RegexWriter.save(prop.getProperty("regex_file"), group.getGroupID(), regexList);
-                    RegexWriter.save(prop.getProperty("regex_tree_file"), group.getGroupID(), Utils.serializeTree(solution1.getRegexTree()), Utils.serializeTree(solution1.getReplacementTree()));
-
+                    try {
+                        RegexWriter.save(prop.getProperty("regex_tree_file"), group.getGroupID(), Utils.serializeTree(solution1.getRegexTree()), Utils.serializeTree(solution1.getReplacementTree()));
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
                 }
             } catch (Exception e) {
                 e.printStackTrace();
