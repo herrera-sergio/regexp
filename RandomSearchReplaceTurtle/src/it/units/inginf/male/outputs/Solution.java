@@ -1,6 +1,6 @@
 /*
- * Copyright (C) 2018 Machine Learning Lab - University of Trieste, 
- * Italy (http://machinelearning.inginf.units.it/)  
+ * Copyright (C) 2018 Machine Learning Lab - University of Trieste,
+ * Italy (http://machinelearning.inginf.units.it/)
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -20,48 +20,50 @@ package it.units.inginf.male.outputs;
 
 import it.units.inginf.male.coevolution.Forest;
 import it.units.inginf.male.objective.Ranking;
+import it.units.inginf.male.tree.Node;
 
 /**
- *
  * @author Fabiano
  */
 public class Solution {
 
+    private String solution;
+    private transient Node regexTree;
+    private transient Node replacementTree;
+    private String regex;
+    private String replacement;
+    private double[] fitness;
+
+
     public Solution() {
     }
-    
-    public Solution(Ranking individual){
+
+    public Solution(Ranking individual) {
         StringBuilder builder = new StringBuilder();
         individual.getTree().describe(builder);
         this.solution = builder.toString();
         this.fitness = individual.getFitness();
-        
-        if(individual.getTree() instanceof Forest){
-            Forest f = (Forest)individual.getTree();
+
+        if (individual.getTree() instanceof Forest) {
+            Forest f = (Forest) individual.getTree();
             builder.delete(0, builder.length());
             f.get(0).describe(builder);
+            this.regexTree = f.get(0);
             this.regex = builder.toString();
             builder.delete(0, builder.length());
             f.get(1).describe(builder);
+            this.replacementTree = f.get(1);
             this.replacement = builder.toString();
         }
     }
-
     public Solution(String solution) {
         this.solution = solution;
     }
-
     public Solution(String solution, double[] fitness) {
         this.solution = solution;
         this.fitness = fitness;
     }
-    
-    
-    private String solution;
-    private String regex;
-    private String replacement;
-    private double[] fitness;
-    
+
     public String getSolution() {
         return solution;
     }
@@ -85,6 +87,12 @@ public class Solution {
     public String getReplacement() {
         return replacement;
     }
-        
-    
+
+    public Node getRegexTree() {
+        return regexTree;
+    }
+
+    public Node getReplacementTree() {
+        return replacementTree;
+    }
 }

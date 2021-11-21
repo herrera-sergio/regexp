@@ -1,6 +1,6 @@
 /*
- * Copyright (C) 2018 Machine Learning Lab - University of Trieste, 
- * Italy (http://machinelearning.inginf.units.it/)  
+ * Copyright (C) 2018 Machine Learning Lab - University of Trieste,
+ * Italy (http://machinelearning.inginf.units.it/)
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -14,12 +14,14 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
- */package it.units.inginf.male;
+ */
+package it.units.inginf.male;
 
 /*
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
+
 import it.units.inginf.male.configuration.Configuration;
 import it.units.inginf.male.configuration.Configurator;
 import it.units.inginf.male.conflict.model.ConflictGroup;
@@ -28,10 +30,11 @@ import it.units.inginf.male.conflict.utils.ConflictReader;
 import it.units.inginf.male.conflict.utils.ConflictWriter;
 import it.units.inginf.male.conflict.utils.RegexWriter;
 import it.units.inginf.male.outputs.FinalSolution;
+import it.units.inginf.male.outputs.Results;
 import it.units.inginf.male.strategy.ExecutionStrategy;
 import it.units.inginf.male.strategy.impl.CoolTextualExecutionListener;
-import it.units.inginf.male.outputs.Results;
 import it.units.inginf.male.utils.Utils;
+
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -42,7 +45,6 @@ import java.util.logging.FileHandler;
 import java.util.logging.Logger;
 
 /**
- *
  * @author Marco
  */
 public class Main {
@@ -51,138 +53,138 @@ public class Main {
      * @param args the command line arguments
      */
     public static void main(String[] args) throws Exception {
-        Properties prop=null;
-        ConflictGroup group=null;
-        
+        Properties prop = null;
+        ConflictGroup group = null;
+
         if (args.length < 2) {
             printUsage();
             System.exit(0);
         }
         //arg[0] grupo
-        
-        String groupId="-1";
-        
-        for(int i=1;i<args.length;i++){
-            groupId=args[i];
+
+        String groupId = "-1";
+
+        for (int i = 1; i < args.length; i++) {
+            groupId = args[i];
             //leggere file di configuration
             try {
-                prop=loadProperties(args[0]);
+                prop = loadProperties(args[0]);
                 //Call the createTrainingCVS method
-                group=ConflictReader.load(prop.getProperty("conflict_file"), groupId);
+                group = ConflictReader.load(prop.getProperty("conflict_file"), groupId);
 
 //                System.out.println("Conflict Group: "+group.toString());
 
                 ConflictWriter.write(prop.getProperty("dataset_file"), group);
-            }
-            catch(IOException ieo){
-                
-                ieo.printStackTrace();
-                
-                 System.exit(-1);
-            }
-            
-            try{
-                ArrayList<Regexp> regexList=new ArrayList<Regexp>();
-                FinalSolution solution1=getBestSolution(prop,group,groupId);
-                FinalSolution solution2=null;
+            } catch (IOException ieo) {
 
-                if(group.getConflicts().size()>=3){
+                ieo.printStackTrace();
+
+                System.exit(-1);
+            }
+
+            try {
+                ArrayList<Regexp> regexList = new ArrayList<Regexp>();
+                FinalSolution solution1 = getBestSolution(prop, group, groupId);
+                FinalSolution solution2 = null;
+
+                if (group.getConflicts().size() >= 3) {
                     group.randomizedConflicts();
-                    solution2=getBestSolution(prop,group,groupId);
+                    solution2 = getBestSolution(prop, group, groupId);
 //                    System.out.println("Group:"+groupId+"Solution 1: ("+solution1.getRegex()+" - "+solution1.getReplacement()+")");
 //                    System.out.println("Group:"+groupId+"Solution 2: ("+solution2.getRegex()+" - "+solution2.getReplacement()+")");
 
-                    if(solution1!=null && solution2!=null){
-                        if(solution1.getRegex().equals(solution2.getRegex())){
-                            Regexp regexp1=new Regexp(solution1.getRegex(),solution1.getReplacement());
+                    if (solution1 != null && solution2 != null) {
+                        if (solution1.getRegex().equals(solution2.getRegex())) {
+                            Regexp regexp1 = new Regexp(solution1.getRegex(), solution1.getReplacement());
                             regexList.add(regexp1);
-                        }
-                        else{
-                            if(!solution1.getRegex().isEmpty()){
-                                Regexp regexp1=new Regexp(solution1.getRegex(),solution1.getReplacement());
+                        } else {
+                            if (!solution1.getRegex().isEmpty()) {
+                                Regexp regexp1 = new Regexp(solution1.getRegex(), solution1.getReplacement());
                                 regexList.add(regexp1);
-                                if(!solution2.getRegex().isEmpty()){
-                                    Regexp regexp2=new Regexp(solution2.getRegex(),solution2.getReplacement());
+                                RegexWriter.save(prop.getProperty("regex_tree_file"), group.getGroupID(), Utils.serializeTree(solution1.getRegexTree()), Utils.serializeTree(solution1.getReplacementTree()));
+                                if (!solution2.getRegex().isEmpty()) {
+                                    Regexp regexp2 = new Regexp(solution2.getRegex(), solution2.getReplacement());
                                     regexList.add(regexp2);
                                 }
-                            }
-                            else if(!solution2.getRegex().isEmpty()){
-                                Regexp regexp2=new Regexp(solution2.getRegex(),solution2.getReplacement());
+                            } else if (!solution2.getRegex().isEmpty()) {
+                                Regexp regexp2 = new Regexp(solution2.getRegex(), solution2.getReplacement());
                                 regexList.add(regexp2);
+                                RegexWriter.save(prop.getProperty("regex_tree_file"), group.getGroupID(), Utils.serializeTree(solution2.getRegexTree()), Utils.serializeTree(solution2.getReplacementTree()));
                             }
                         }
                     }
 
                     RegexWriter.save(prop.getProperty("regex_file"), group.getGroupID(), regexList);
-                }
-                else {
-                    Regexp regexp1=new Regexp(solution1.getRegex(),solution1.getReplacement());
+
+                    RegexWriter.save(prop.getProperty("regex_tree_file"), group.getGroupID(), regexList);
+
+                } else {
+                    Regexp regexp1 = new Regexp(solution1.getRegex(), solution1.getReplacement());
                     regexList.add(regexp1);
                     RegexWriter.save(prop.getProperty("regex_file"), group.getGroupID(), regexList);
+                    RegexWriter.save(prop.getProperty("regex_tree_file"), group.getGroupID(), Utils.serializeTree(solution1.getRegexTree()), Utils.serializeTree(solution1.getReplacementTree()));
+
                 }
-            }
-            catch (Exception e){
+            } catch (Exception e) {
                 e.printStackTrace();
                 System.exit(-1);
             }
         }
     }
-    
-    private static FinalSolution getBestSolution(Properties prop, ConflictGroup group, String groupId) throws IOException, Exception{
-          //  System.out.println("Conflict Group: "+group.toString());
 
-            ConflictWriter.write(prop.getProperty("dataset_file"), group);
+    private static FinalSolution getBestSolution(Properties prop, ConflictGroup group, String groupId) throws IOException, Exception {
+        //  System.out.println("Conflict Group: "+group.toString());
 
-            //give the path of the modified 
+        ConflictWriter.write(prop.getProperty("dataset_file"), group);
 
-            Configuration configuration = Configurator.configure(prop.getProperty("regex_configuration"),prop.getProperty("dataset_file"),group);
+        //give the path of the modified
+
+        Configuration configuration = Configurator.configure(prop.getProperty("regex_configuration"), prop.getProperty("dataset_file"), group, prop);
 
 //            System.out.println("Dataset training:"+ configuration.getDatasetContainer().getTrainingDataset().getExamples());
 //            System.out.println("Dataset validation:"+ configuration.getDatasetContainer().getValidationDataset().getExamples());
 //            System.out.println("Dataset testing:"+ configuration.getDatasetContainer().getTestingDataset().getExamples());
 
-            Logger.getLogger("").addHandler(new FileHandler(new File(configuration.getOutputFolder(), "log.xml").getCanonicalPath()));
-            Results results = new Results(configuration);
-            results.setMachineHardwareSpecifications(Utils.cpuInfo());
+        Logger.getLogger("").addHandler(new FileHandler(new File(configuration.getOutputFolder(), "log.xml").getCanonicalPath()));
+        Results results = new Results(configuration);
+        results.setMachineHardwareSpecifications(Utils.cpuInfo());
 
-            ExecutionStrategy strategy = configuration.getStrategy();
-            long startTime = System.currentTimeMillis();
-            strategy.execute(configuration, new CoolTextualExecutionListener(groupId, configuration, results));
-            //strategy.execute(configuration, new DefaultExecutionListener());
-            if (configuration.getPostProcessor() != null) {
-                startTime = System.currentTimeMillis() - startTime;
-                configuration.getPostProcessor().elaborate(configuration, results, startTime);
-            }
+        ExecutionStrategy strategy = configuration.getStrategy();
+        long startTime = System.currentTimeMillis();
+        strategy.execute(configuration, new CoolTextualExecutionListener(groupId, configuration, results));
+        //strategy.execute(configuration, new DefaultExecutionListener());
+        if (configuration.getPostProcessor() != null) {
+            startTime = System.currentTimeMillis() - startTime;
+            configuration.getPostProcessor().elaborate(configuration, results, startTime);
+        }
 
-            //create a JSON file if it does not exist, and add the group with the regex and the replacement.
-            return results.getBestSolution();
+        //create a JSON file if it does not exist, and add the group with the regex and the replacement.
+        return results.getBestSolution();
     }
 
     private static void printUsage() {
-     //   System.out.println("Usage: java -jar \"Random_Regex_Turtle.jar\" config_path groups");
+        //   System.out.println("Usage: java -jar \"Random_Regex_Turtle.jar\" config_path groups");
     }
-    
-    private void createTrainingCVS(String group, String outputFile){
-        //Read Json for group
-        
-        //write the conflicts in CVS format on the outputFile
-    
-    }
-    
-    private static Properties loadProperties(String path) throws IOException{
+
+    private static Properties loadProperties(String path) throws IOException {
         Properties prop;
-        try{
-            InputStream input = new FileInputStream(path+"config.properties");
+        try {
+            InputStream input = new FileInputStream(path + "config.properties");
             prop = new Properties();
             prop.load(input);
             return prop;
-        }
-        catch(IOException ioe){
+        } catch (IOException ioe) {
             ioe.printStackTrace();
             throw ioe;
         }
     }
-    
-    
-    
+
+    private void createTrainingCVS(String group, String outputFile) {
+        //Read Json for group
+
+        //write the conflicts in CVS format on the outputFile
+
+    }
+
+
 }

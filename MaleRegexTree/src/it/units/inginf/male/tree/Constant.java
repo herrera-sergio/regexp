@@ -40,6 +40,8 @@ public class Constant extends AbstractNode implements Leaf {
     private static Set<String> allowedClasses = new HashSet<String>(Arrays.asList("\\w", "\\d", ".", "\\b", "\\s"));
     private boolean escaped;
 
+    public Constant(){}
+
     public Constant(String value) {
         this.value = value;
         charClass = allowedClasses.contains(value);
@@ -123,6 +125,32 @@ public class Constant extends AbstractNode implements Leaf {
         }
         return true;
     }
-    
-    
+
+    public String getValue() {
+        return value;
+    }
+
+    public void setValue(String value) {
+        this.value = value;
+    }
+
+    public boolean isCharClass() {
+        return charClass;
+    }
+
+    public void setCharClass(boolean charClass) {
+        this.charClass = charClass;
+    }
+
+    public static Set<String> getAllowedClasses() {
+        return allowedClasses;
+    }
+
+    public static void setAllowedClasses(Set<String> allowedClasses) {
+        Constant.allowedClasses = allowedClasses;
+    }
+
+    public void setEscaped(boolean escaped) {
+        this.escaped = escaped;
+    }
 }

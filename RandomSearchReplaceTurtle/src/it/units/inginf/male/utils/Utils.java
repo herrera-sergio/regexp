@@ -17,6 +17,10 @@
  */
 package it.units.inginf.male.utils;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.DeserializationFeature;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.jsontype.impl.LaissezFaireSubTypeValidator;
 import it.units.inginf.male.coevolution.Forest;
 import it.units.inginf.male.inputs.Bounds;
 import it.units.inginf.male.objective.Ranking;
@@ -35,7 +39,6 @@ import java.util.logging.Logger;
  * @author Marco
  */
 public class Utils {
-
     public static final String ANSI_RESET = "\u001B[0m";
     public static final String ANSI_BLACK = "\u001B[30m";
     public static final String ANSI_RED = "\u001B[31m";
@@ -49,6 +52,14 @@ public class Utils {
     private static final List<String> colors = Arrays.asList(ANSI_GREEN, ANSI_PURPLE, ANSI_CYAN, ANSI_RED);
     private static transient final Set<Character> quoteList = new TreeSet<Character>(
             Arrays.asList(new Character[]{'?', '+', '*', '.', '[', ']', '\\', '$', '(', ')', '^', '{', '|', '-', '&'}));
+    private static final ObjectMapper mapper = new ObjectMapper();
+
+    static {
+        mapper.activateDefaultTyping(new LaissezFaireSubTypeValidator(), ObjectMapper.DefaultTyping.EVERYTHING);
+        mapper.configure(
+                DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+        mapper.addMixIn(Node.class, MixIn.class);
+    }
 
     public static String getCoolForestRapresentation(Forest forest) {
         StringBuilder sb = new StringBuilder();
@@ -69,6 +80,25 @@ public class Utils {
             return regex.substring(0, 64) + " [..]" + ANSI_RESET;
         }
         return regex;
+    }
+
+    public static String serializeTree(Node root) throws JsonProcessingException {
+
+        return mapper.writeValueAsString(root);
+    }
+
+    public static Node deserializeTree(String serializedTree) throws JsonProcessingException {
+
+        Node root = mapper.readValue(serializedTree, Node.class);
+        sanitizeTree(root);
+        return root;
+    }
+
+    private static void sanitizeTree(Node root) {
+        for (Node child : root.getChildrens()) {
+            child.setParent(root);
+            sanitizeTree(child);
+        }
     }
 
     public static int computeLevenshteinDistance(String s, String t) {

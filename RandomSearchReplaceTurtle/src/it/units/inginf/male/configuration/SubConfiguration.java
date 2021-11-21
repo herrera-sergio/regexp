@@ -17,6 +17,7 @@
  */
 package it.units.inginf.male.configuration;
 
+import it.units.inginf.male.conflict.model.ConflictGroup;
 import it.units.inginf.male.generations.EmptyPopulationBuilder;
 import it.units.inginf.male.generations.InitialPopulationBuilder;
 import it.units.inginf.male.terminalsets.EmptyTerminalSetBuilder;
@@ -28,6 +29,7 @@ import it.units.inginf.male.tree.NodeFactory;
 import it.units.inginf.male.tree.RegexRange;
 import java.util.List;
 import java.util.Map;
+import java.util.Properties;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -85,6 +87,8 @@ public class SubConfiguration {
     
     
     private EvolutionParameters evolutionParameters;
+    private Properties properties;
+    private ConflictGroup conflictGroup;
     private transient NodeFactory nodeFactory;
     private transient InitialPopulationBuilder populationBuilder = new EmptyPopulationBuilder();
     private Map<String, String> populationBuilderParameters;
@@ -164,7 +168,23 @@ public class SubConfiguration {
 
     public void setPopulationBuilder(InitialPopulationBuilder populationBuilder) {
         this.populationBuilder = populationBuilder;
-    } 
+    }
+
+    public Properties getProperties() {
+        return properties;
+    }
+
+    public void setProperties(Properties properties) {
+        this.properties = properties;
+    }
+
+    public ConflictGroup getConflictGroup() {
+        return conflictGroup;
+    }
+
+    public void setConflictGroup(ConflictGroup conflictGroup) {
+        this.conflictGroup = conflictGroup;
+    }
 
     public DatasetContainer getDatasetContainer() {
         return datasetContainer;
