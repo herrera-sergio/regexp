@@ -21,17 +21,14 @@ import it.units.inginf.male.tree.Constant;
 import it.units.inginf.male.tree.Node;
 import it.units.inginf.male.tree.operator.Concatenator;
 import it.units.inginf.male.tree.operator.MatchOneOrMore;
+import org.apache.commons.text.similarity.FuzzyScore;
+import org.junit.Test;
 
-import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Locale;
 import java.util.Random;
-
-import me.xdrop.fuzzywuzzy.FuzzySearch;
-import org.apache.commons.text.similarity.FuzzyScore;
-import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;
 
