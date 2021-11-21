@@ -111,8 +111,8 @@ public class RegexWriter {
         FileWriter file = new FileWriter(fileName);
         try {
             file.write(parent.toString());
-            System.out.println("Successfully Copied JSON Object to File...");
-            System.out.println("\nJSON Object: " + parent);
+//            System.out.println("Successfully Copied JSON Object to File...");
+//            System.out.println("\nJSON Object: " + parent);
         }
         catch(IOException ioe){
             ioe.printStackTrace();
@@ -176,8 +176,8 @@ public class RegexWriter {
         FileWriter file = new FileWriter(fileName);
         try {
             file.write(parent.toString());
-            System.out.println("Successfully Copied JSON Object to File...");
-            System.out.println("\nJSON Object: " + parent);
+//            System.out.println("Successfully Copied JSON Object to File...");
+//            System.out.println("\nJSON Object: " + parent);
         }
         catch(IOException ioe){
             ioe.printStackTrace();
@@ -205,8 +205,8 @@ public class RegexWriter {
         FileWriter file = new FileWriter(fileName);
         try {
             file.write(parent.toString());
-            System.out.println("Successfully Copied JSON Object to File...");
-            System.out.println("\nJSON Object: " + parent);
+//            System.out.println("Successfully Copied JSON Object to File...");
+//            System.out.println("\nJSON Object: " + parent);
         }
         catch(IOException ioe){
             ioe.printStackTrace();
@@ -238,8 +238,8 @@ public class RegexWriter {
         FileWriter file = new FileWriter(fileName);
         try {
             file.write(parent.toString());
-            System.out.println("Successfully Copied JSON Object to File...");
-            System.out.println("\nJSON Object: " + parent);
+//            System.out.println("Successfully Copied JSON Object to File...");
+//            System.out.println("\nJSON Object: " + parent);
         }
         catch(IOException ioe){
             ioe.printStackTrace();
