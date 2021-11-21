@@ -30,11 +30,15 @@ import java.io.InputStreamReader;
 public class RegexReader {
 
     public static String readRegex(String fileName, String group) throws IOException {
-        return read(fileName, group).getAsJsonPrimitive("regex").getAsString();
+        JsonObject groupObject = read(fileName, group);
+        return groupObject != null ? groupObject.getAsJsonPrimitive("regex").
+                getAsString() : null;
     }
 
     public static String readReplacement(String fileName, String group) throws IOException {
-        return read(fileName, group).getAsJsonPrimitive("replacement").getAsString();
+        JsonObject groupObject = read(fileName, group);
+        return groupObject != null ? groupObject.getAsJsonPrimitive("replacement").
+                getAsString() : null;
     }
 
     private static JsonObject read(String fileName, String group) throws IOException {
