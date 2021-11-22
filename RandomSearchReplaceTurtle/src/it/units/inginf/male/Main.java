@@ -40,6 +40,7 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Properties;
 import java.util.logging.FileHandler;
 import java.util.logging.Logger;
@@ -72,8 +73,6 @@ public class Main {
                 //Call the createTrainingCVS method
                 group = ConflictReader.load(prop.getProperty("conflict_file"), groupId);
 
-//                System.out.println("Conflict Group: "+group.toString());
-
                 ConflictWriter.write(prop.getProperty("dataset_file"), group);
             } catch (IOException ieo) {
 
@@ -83,7 +82,7 @@ public class Main {
             }
 
             try {
-                ArrayList<Regexp> regexList = new ArrayList<Regexp>();
+                List<Regexp> regexList = new ArrayList<Regexp>();
                 FinalSolution solution1 = getBestSolution(prop, group, groupId);
                 FinalSolution solution2 = null;
 
@@ -99,39 +98,33 @@ public class Main {
                             regexList.add(regexp1);
                         } else {
                             if (!solution1.getRegex().isEmpty()) {
-                                Regexp regexp1 = new Regexp(solution1.getRegex(), solution1.getReplacement());
+                                Regexp regexp1 = createRegexWithSerializedTree(solution1);
                                 regexList.add(regexp1);
-                                try {
-                                    RegexWriter.save(prop.getProperty("regex_tree_file"), group.getGroupID(), Utils.serializeTree(solution1.getRegexTree()), Utils.serializeTree(solution1.getReplacementTree()));
-                                } catch (Exception e) {
-                                    e.printStackTrace();
-                                }
                                 if (!solution2.getRegex().isEmpty()) {
-                                    Regexp regexp2 = new Regexp(solution2.getRegex(), solution2.getReplacement());
+                                    Regexp regexp2 = createRegexWithSerializedTree(solution2);
                                     regexList.add(regexp2);
                                 }
                             } else if (!solution2.getRegex().isEmpty()) {
-                                Regexp regexp2 = new Regexp(solution2.getRegex(), solution2.getReplacement());
+                                Regexp regexp2 = createRegexWithSerializedTree(solution2);
                                 regexList.add(regexp2);
-                                try {
-                                    RegexWriter.save(prop.getProperty("regex_tree_file"), group.getGroupID(), Utils.serializeTree(solution2.getRegexTree()), Utils.serializeTree(solution2.getReplacementTree()));
-                                } catch (Exception e) {
-                                    e.printStackTrace();
-                                }
                             }
                         }
                     }
 
                     RegexWriter.save(prop.getProperty("regex_file"), group.getGroupID(), regexList);
 
-                    RegexWriter.save(prop.getProperty("regex_tree_file"), group.getGroupID(), regexList);
+                    try {
+                        RegexWriter.saveTree(prop.getProperty("regex_tree_file"), group.getGroupID(), regexList);
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
 
                 } else {
-                    Regexp regexp1 = new Regexp(solution1.getRegex(), solution1.getReplacement());
+                    Regexp regexp1 = createRegexWithSerializedTree(solution1);
                     regexList.add(regexp1);
                     RegexWriter.save(prop.getProperty("regex_file"), group.getGroupID(), regexList);
                     try {
-                        RegexWriter.save(prop.getProperty("regex_tree_file"), group.getGroupID(), Utils.serializeTree(solution1.getRegexTree()), Utils.serializeTree(solution1.getReplacementTree()));
+                        RegexWriter.saveTree(prop.getProperty("regex_tree_file"), group.getGroupID(), regexList);
                     } catch (Exception e) {
                         e.printStackTrace();
                     }
@@ -141,6 +134,18 @@ public class Main {
                 System.exit(-1);
             }
         }
+    }
+
+    private static Regexp createRegexWithSerializedTree(FinalSolution solution) {
+
+        Regexp regexp = new Regexp(solution.getRegex(), solution.getReplacement());
+        try {
+            regexp.setSerializedRegexp(Utils.serializeTree(solution.getRegexTree()));
+            regexp.setSerializedReplacement(Utils.serializeTree(solution.getReplacementTree()));
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return regexp;
     }
 
     private static FinalSolution getBestSolution(Properties prop, ConflictGroup group, String groupId) throws IOException, Exception {

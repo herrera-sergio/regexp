@@ -23,22 +23,44 @@ import java.io.BufferedReader;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * @author dotpolimi
  */
 public class RegexReader {
 
-    public static String readRegex(String fileName, String group) throws IOException {
+    public static List<String> readRegex(String fileName, String group) throws IOException {
         JsonObject groupObject = read(fileName, group);
-        return groupObject != null ? groupObject.getAsJsonPrimitive("regex").
-                getAsString() : null;
+        List<String> regexList = new ArrayList<>();
+
+        if (groupObject != null) {
+            if (groupObject.isJsonArray()) {
+
+                groupObject.getAsJsonArray().forEach(el ->
+                        regexList.add(el.getAsJsonObject().getAsJsonPrimitive("regex").getAsString()));
+            } else regexList.add(groupObject.getAsJsonPrimitive("regex").
+                    getAsString());
+        }
+
+        return regexList;
     }
 
-    public static String readReplacement(String fileName, String group) throws IOException {
+    public static List<String> readReplacement(String fileName, String group) throws IOException {
         JsonObject groupObject = read(fileName, group);
-        return groupObject != null ? groupObject.getAsJsonPrimitive("replacement").
-                getAsString() : null;
+        List<String> replacementList = new ArrayList<>();
+
+        if (groupObject != null) {
+            if (groupObject.isJsonArray()) {
+
+                groupObject.getAsJsonArray().forEach(el ->
+                        replacementList.add(el.getAsJsonObject().getAsJsonPrimitive("replacement").getAsString()));
+            } else replacementList.add(groupObject.getAsJsonPrimitive("replacement").
+                    getAsString());
+        }
+
+        return replacementList;
     }
 
     private static JsonObject read(String fileName, String group) throws IOException {

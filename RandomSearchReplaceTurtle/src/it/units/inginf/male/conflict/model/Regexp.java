@@ -17,22 +17,23 @@
 package it.units.inginf.male.conflict.model;
 
 /**
- *
  * @author dotpolimi
  */
 public class Regexp {
-    
-    String regexp=null;
-    String replacement=null;
+
+    String regexp = null;
+    String replacement = null;
+    String serializedRegexp;
+    String serializedReplacement;
 
     public Regexp() {
-        this.regexp=new String();
-        this.replacement=new String();
+        this.regexp = new String();
+        this.replacement = new String();
     }
-    
+
     public Regexp(String regexp, String replacement) {
-        this.regexp=regexp;
-        this.replacement=replacement;
+        this.regexp = regexp;
+        this.replacement = replacement;
     }
 
     public String getRegexp() {
@@ -50,5 +51,20 @@ public class Regexp {
     public void setReplacement(String replacement) {
         this.replacement = replacement;
     }
-    
+
+    public String getSerializedRegexp() {
+        return serializedRegexp;
+    }
+
+    public void setSerializedRegexp(String serializedRegexp) {
+        this.serializedRegexp = serializedRegexp;
+    }
+
+    public String getSerializedReplacement() {
+        return serializedReplacement;
+    }
+
+    public void setSerializedReplacement(String serializedReplacement) {
+        this.serializedReplacement = serializedReplacement;
+    }
 }

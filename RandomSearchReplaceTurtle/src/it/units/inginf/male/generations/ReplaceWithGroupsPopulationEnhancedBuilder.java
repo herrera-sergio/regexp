@@ -17,6 +17,7 @@
  */
 package it.units.inginf.male.generations;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import it.units.inginf.male.configuration.SubConfiguration;
 import it.units.inginf.male.conflict.utils.RegexReader;
 import it.units.inginf.male.inputs.Bounds;
@@ -58,9 +59,14 @@ public class ReplaceWithGroupsPopulationEnhancedBuilder implements InitialPopula
         DataSetReplace trainingDataset = configuration.getDatasetContainer().getTrainingDataset();
         this.population.addAll(this.setup(configuration, trainingDataset));
         try {
-            String serializedTree = RegexReader.readReplacement((String) configuration.getProperties().get("regex_tree_file"), configuration.getConflictGroup().getGroupID());
-            if(serializedTree != null)
-                this.population.add(Utils.deserializeTree(serializedTree));
+            List<String> serializedTrees = RegexReader.readReplacement((String) configuration.getProperties().get("regex_tree_file"), configuration.getConflictGroup().getGroupID());
+            serializedTrees.forEach(serializedTree -> {
+                try {
+                    this.population.add(Utils.deserializeTree(serializedTree));
+                } catch (JsonProcessingException e) {
+                    e.printStackTrace();
+                }
+            });
         }catch(Exception e){
             e.printStackTrace();
             System.out.println("Could not load previous result");
