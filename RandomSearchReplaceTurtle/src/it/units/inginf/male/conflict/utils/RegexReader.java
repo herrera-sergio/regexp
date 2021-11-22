@@ -17,6 +17,7 @@
 package it.units.inginf.male.conflict.utils;
 
 import com.google.gson.Gson;
+import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 
 import java.io.BufferedReader;
@@ -32,38 +33,28 @@ import java.util.List;
 public class RegexReader {
 
     public static List<String> readRegex(String fileName, String group) throws IOException {
-        JsonObject groupObject = read(fileName, group);
+        JsonArray groupObject = read(fileName, group);
         List<String> regexList = new ArrayList<>();
 
         if (groupObject != null) {
-            if (groupObject.isJsonArray()) {
-
-                groupObject.getAsJsonArray().forEach(el ->
-                        regexList.add(el.getAsJsonObject().getAsJsonPrimitive("regex").getAsString()));
-            } else regexList.add(groupObject.getAsJsonPrimitive("regex").
-                    getAsString());
+            groupObject.getAsJsonArray().forEach(el -> regexList.add(el.getAsJsonObject().getAsJsonPrimitive("regex").getAsString()));
         }
 
         return regexList;
     }
 
     public static List<String> readReplacement(String fileName, String group) throws IOException {
-        JsonObject groupObject = read(fileName, group);
+        JsonArray groupObject = read(fileName, group);
         List<String> replacementList = new ArrayList<>();
 
         if (groupObject != null) {
-            if (groupObject.isJsonArray()) {
-
-                groupObject.getAsJsonArray().forEach(el ->
-                        replacementList.add(el.getAsJsonObject().getAsJsonPrimitive("replacement").getAsString()));
-            } else replacementList.add(groupObject.getAsJsonPrimitive("replacement").
-                    getAsString());
+            groupObject.getAsJsonArray().forEach(el -> replacementList.add(el.getAsJsonObject().getAsJsonPrimitive("replacement").getAsString()));
         }
 
         return replacementList;
     }
 
-    private static JsonObject read(String fileName, String group) throws IOException {
+    private static JsonArray read(String fileName, String group) throws IOException {
 
         try (FileInputStream fis = new FileInputStream(fileName); InputStreamReader isr = new InputStreamReader(fis)) {
 
@@ -77,7 +68,7 @@ public class RegexReader {
             }
             String json = sb.toString();
             Gson gson = new Gson();
-            return gson.fromJson(json, JsonObject.class).getAsJsonObject(group);
+            return gson.fromJson(json, JsonObject.class).getAsJsonArray(group);
 
         } catch (IOException ioe) {
             ioe.printStackTrace();
