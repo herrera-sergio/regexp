@@ -79,13 +79,14 @@ public class UtilsTest {
 
 
         int better = 0;
-        for(int i= 0; i < 300; i++){
+        for(int i= 0; i < 10000; i++){
 
-            byte[] array = new byte[i+1]; // length is bounded by 7
-            new Random().nextBytes(array);
-            String s1 = new String(array, StandardCharsets.UTF_8);
-            new Random().nextBytes(array);
-            String s2 = new String(array, StandardCharsets.UTF_8);
+            byte[] array1 = new byte[new Random().nextInt(i+1)];
+            byte[] array2 = new byte[new Random().nextInt(i+1)];// length is bounded by 7
+            new Random().nextBytes(array1);
+            String s1 = new String(array1, StandardCharsets.UTF_8);
+            new Random().nextBytes(array2);
+            String s2 = new String(array2, StandardCharsets.UTF_8);
 
             System.out.println("S1 " + s1 + " S2" + s2);
 

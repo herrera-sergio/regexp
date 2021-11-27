@@ -37,7 +37,11 @@ public class RegexReader {
         List<String> regexList = new ArrayList<>();
 
         if (groupObject != null) {
-            groupObject.getAsJsonArray().forEach(el -> regexList.add(el.getAsJsonObject().getAsJsonPrimitive("regex").getAsString()));
+            groupObject.getAsJsonArray().forEach(
+                    el -> regexList.add(el.
+                            getAsJsonObject().
+                            getAsJsonPrimitive("regex").
+                            getAsString()));
         }
 
         return regexList;

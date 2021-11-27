@@ -94,7 +94,7 @@ public class Main {
 
                     if (solution1 != null && solution2 != null) {
                         if (solution1.getRegex().equals(solution2.getRegex())) {
-                            Regexp regexp1 = new Regexp(solution1.getRegex(), solution1.getReplacement());
+                            Regexp regexp1 = createRegexWithSerializedTree(solution1);
                             regexList.add(regexp1);
                         } else {
                             if (!solution1.getRegex().isEmpty()) {
