@@ -20,10 +20,7 @@ import com.google.gson.Gson;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 
-import java.io.BufferedReader;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.InputStreamReader;
+import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -33,29 +30,29 @@ import java.util.List;
 public class RegexReader {
 
     public static List<String> readRegex(String fileName, String group) throws IOException {
-        JsonArray groupObject = read(fileName, group);
-        List<String> regexList = new ArrayList<>();
 
-        if (groupObject != null) {
-            groupObject.getAsJsonArray().forEach(
-                    el -> regexList.add(el.
-                            getAsJsonObject().
-                            getAsJsonPrimitive("regex").
-                            getAsString()));
-        }
-
-        return regexList;
+        return readSerializedTrees(fileName, group, "regex");
     }
 
     public static List<String> readReplacement(String fileName, String group) throws IOException {
+
+        return readSerializedTrees(fileName, group, "replacement");
+    }
+
+    private static List<String> readSerializedTrees(String fileName, String group, String field) throws IOException {
+
+        File f = new File(fileName);
+        if (!f.exists() || f.isDirectory())
+            return new ArrayList<>();
+
         JsonArray groupObject = read(fileName, group);
-        List<String> replacementList = new ArrayList<>();
+        List<String> treeList = new ArrayList<>();
 
         if (groupObject != null) {
-            groupObject.getAsJsonArray().forEach(el -> replacementList.add(el.getAsJsonObject().getAsJsonPrimitive("replacement").getAsString()));
+            groupObject.getAsJsonArray().forEach(el -> treeList.add(el.getAsJsonObject().getAsJsonPrimitive(field).getAsString()));
         }
 
-        return replacementList;
+        return treeList;
     }
 
     private static JsonArray read(String fileName, String group) throws IOException {
