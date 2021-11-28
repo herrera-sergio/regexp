@@ -28,6 +28,7 @@ import it.units.inginf.male.conflict.model.ConflictGroup;
 import it.units.inginf.male.conflict.model.Regexp;
 import it.units.inginf.male.conflict.utils.ConflictReader;
 import it.units.inginf.male.conflict.utils.ConflictWriter;
+import it.units.inginf.male.conflict.utils.RegexReader;
 import it.units.inginf.male.conflict.utils.RegexWriter;
 import it.units.inginf.male.outputs.FinalSolution;
 import it.units.inginf.male.outputs.Results;
@@ -148,14 +149,18 @@ public class Main {
         return regexp;
     }
 
-    private static FinalSolution getBestSolution(Properties prop, ConflictGroup group, String groupId) throws IOException, Exception {
+    private static FinalSolution getBestSolution(Properties prop, ConflictGroup group, String groupId) throws  Exception {
         //  System.out.println("Conflict Group: "+group.toString());
 
         ConflictWriter.write(prop.getProperty("dataset_file"), group);
 
         //give the path of the modified
-
-        Configuration configuration = Configurator.configure(prop.getProperty("regex_configuration"), prop.getProperty("dataset_file"), group, prop);
+        //check if a solution for this group already exists and load the proper configuration
+        Configuration configuration;
+        if (RegexReader.exists(prop.getProperty("regex_tree_file"), groupId))
+            configuration = Configurator.configure(prop.getProperty("regex_configuration"), prop.getProperty("dataset_file"), group, prop);
+        else
+            configuration = Configurator.configure(prop.getProperty("regex_configuration_performance"), prop.getProperty("dataset_file"), group, prop);
 
 //            System.out.println("Dataset training:"+ configuration.getDatasetContainer().getTrainingDataset().getExamples());
 //            System.out.println("Dataset validation:"+ configuration.getDatasetContainer().getValidationDataset().getExamples());

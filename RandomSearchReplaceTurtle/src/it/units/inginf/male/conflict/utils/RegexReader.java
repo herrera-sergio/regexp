@@ -19,6 +19,7 @@ package it.units.inginf.male.conflict.utils;
 import com.google.gson.Gson;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
 
 import java.io.*;
 import java.util.ArrayList;
@@ -32,6 +33,26 @@ public class RegexReader {
     public static List<String> readRegex(String fileName, String group) throws IOException {
 
         return readSerializedTrees(fileName, group, "regex");
+    }
+
+
+    public static boolean exists(String fileName, String group) throws Exception {
+
+        File f = new File(fileName);
+        if (!f.exists() || f.isDirectory())
+            return false;
+
+        try (BufferedReader br = new BufferedReader(new FileReader(fileName));) {
+
+            JsonParser parser = new JsonParser();
+            JsonObject jsonObject = parser.parse(br).getAsJsonObject();
+            return jsonObject.has(group);
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw e;
+        }
+
     }
 
     public static List<String> readReplacement(String fileName, String group) throws IOException {
