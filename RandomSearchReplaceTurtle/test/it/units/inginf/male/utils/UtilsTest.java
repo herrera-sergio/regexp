@@ -79,7 +79,9 @@ public class UtilsTest {
 
 
         int better = 0;
-        for(int i= 0; i < 10000; i++){
+        int equals = 0;
+        int difference = 0;
+        for(int i= 0; i < 1000; i++){
 
             byte[] array1 = new byte[new Random().nextInt(i+1)];
             byte[] array2 = new byte[new Random().nextInt(i+1)];// length is bounded by 7
@@ -91,12 +93,19 @@ public class UtilsTest {
             System.out.println("S1 " + s1 + " S2" + s2);
 
             long startFuzzy = System.nanoTime();
-            System.out.println(Utils.computeUkkonenDistance(s1,s2, i));
+            int ukkonen = Utils.computeUkkonenDistance(s1,s2, (Math.max(s1.length(), s2.length()) + Math.min(s1.length(), s2.length()))/2);
             long timeFuzzy = System.nanoTime() - startFuzzy;
 
             long startLevensthein = System.nanoTime();
-            System.out.println(Utils.computeLevenshteinDistance(s1, s2));
+            int levensthein = Utils.computeLevenshteinDistance(s1, s2);
             long timeLevensthein = System.nanoTime() - startLevensthein;
+
+            if(ukkonen==levensthein)
+                equals++;
+            else {
+                difference += Math.abs(ukkonen - levensthein);
+                System.out.println("DIFF " + Math.abs(ukkonen - levensthein));
+            }
 
             if(timeFuzzy < timeLevensthein){
                 better++;
@@ -104,6 +113,9 @@ public class UtilsTest {
         }
 
         System.out.println("better "  + better);
+        System.out.println("equals "  + equals);
+        System.out.println("avg difference "  + (float) difference/1000);
+
 
         long startFuzzy = System.nanoTime();
         System.out.println(Utils.computeUkkonenDistance("provajkdhusdhvuiduihvuisdbvuibdusihcuisdhcuihsduichuisdhcuihsduichsduihcuisdhcuisdhcuisdhuisdhuicduhhsduihcisdsduiprovajkdhusdhvuiduihvuisdbvuibdusihcuisdhcuihsduichuisdhcuihsduichsduihcuisdhcuisdhcuisdhuisdhuicduhhsduihcisdsdui","provajkdhusdhvuiduihvuisdbvuibdusihcuisdhcuihsduichuisdhcuihsduichsduihcuisdhcuisdhcuisdhuisdhuicduhhsduihcisdsduiprovajkdhusdhvuiduihvuisdbvuibdusihcuisdhcuihsduichuisdhcuihsduichsduihcuisdhcuisdhcuisdhuisdhuicduhhsduihcisdsduiprovaxxxxxxxxxxxxxxxxxxxxxajskhchuighaishchuiahsihaisuh", null));

@@ -149,7 +149,7 @@ public class Main {
         return regexp;
     }
 
-    private static FinalSolution getBestSolution(Properties prop, ConflictGroup group, String groupId) throws  Exception {
+    private static FinalSolution getBestSolution(Properties prop, ConflictGroup group, String groupId) throws Exception {
         //  System.out.println("Conflict Group: "+group.toString());
 
         ConflictWriter.write(prop.getProperty("dataset_file"), group);
@@ -158,9 +158,10 @@ public class Main {
         //check if a solution for this group already exists and load the proper configuration
         Configuration configuration;
         if (RegexReader.exists(prop.getProperty("regex_tree_file"), groupId))
-            configuration = Configurator.configure(prop.getProperty("regex_configuration"), prop.getProperty("dataset_file"), group, prop);
-        else
             configuration = Configurator.configure(prop.getProperty("regex_configuration_performance"), prop.getProperty("dataset_file"), group, prop);
+        else
+            configuration = Configurator.configure(prop.getProperty("regex_configuration"), prop.getProperty("dataset_file"), group, prop);
+
 
 //            System.out.println("Dataset training:"+ configuration.getDatasetContainer().getTrainingDataset().getExamples());
 //            System.out.println("Dataset validation:"+ configuration.getDatasetContainer().getValidationDataset().getExamples());
