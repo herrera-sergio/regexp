@@ -38,11 +38,12 @@ public class RegexReader {
 
     public static boolean exists(String fileName, String group) throws Exception {
 
-        File f = new File(fileName);
+        String splitFilename = fileName + group + ".json";
+        File f = new File(splitFilename);
         if (!f.exists() || f.isDirectory())
             return false;
 
-        try (BufferedReader br = new BufferedReader(new FileReader(fileName));) {
+        try (BufferedReader br = new BufferedReader(new FileReader(splitFilename))) {
 
             JsonParser parser = new JsonParser();
             JsonObject jsonObject = parser.parse(br).getAsJsonObject();
@@ -62,11 +63,12 @@ public class RegexReader {
 
     private static List<String> readSerializedTrees(String fileName, String group, String field) throws IOException {
 
-        File f = new File(fileName);
+        String splitFilename = fileName + group + ".json";
+        File f = new File(splitFilename);
         if (!f.exists() || f.isDirectory())
             return new ArrayList<>();
 
-        JsonArray groupObject = read(fileName, group);
+        JsonArray groupObject = read(splitFilename, group);
         List<String> treeList = new ArrayList<>();
 
         if (groupObject != null) {

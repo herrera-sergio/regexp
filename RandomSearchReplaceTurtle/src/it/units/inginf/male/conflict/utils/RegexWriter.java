@@ -46,12 +46,12 @@ public class RegexWriter {
     public static void saveTree(String fileName, String group, List<Regexp> regexps) throws IOException {
         //ConflictGroup conflictGroup;
         //List<Conflict> list = new ArrayList();
-
-        File tmpDir = new File(fileName);
+        String splitFilename = fileName + group + ".json";
+        File tmpDir = new File(splitFilename);
         if (tmpDir.exists()) {
-            update(fileName, group, regexps, true);
+            update(splitFilename, group, regexps, true);
         } else {
-            create(fileName, group, regexps);
+            create(splitFilename, group, regexps, true);
         }
     }
 
@@ -64,17 +64,16 @@ public class RegexWriter {
         if (tmpDir.exists()) {
             update(fileName, group, regexps, false);
         } else {
-            create(fileName, group, regexps);
+            create(fileName, group, regexps, false);
         }
     }
 
     private static void update(String fileName, String group, String regexp, String replacement) throws IOException {
-        List<Conflict> list = new ArrayList();
         FileInputStream fis = null;
         InputStreamReader isr = null;
         JsonObject parent = null;
         try {
-            fis = new FileInputStream(new File(fileName));
+            fis = new FileInputStream(fileName);
             isr = new InputStreamReader(fis);
             StringBuilder sb;
             try (BufferedReader bufferedReader = new BufferedReader(isr)) {
@@ -210,22 +209,19 @@ public class RegexWriter {
         }
     }
 
-    private static void create(String fileName, String group, List<Regexp> regExp) throws IOException {
+    private static void create(String fileName, String group, List<Regexp> regExp, boolean serialized) throws IOException {
         //ConflictGroup conflictGroup;
         //List<Conflict> list = new ArrayList();
-
-        Gson gson = new Gson();
 
         JsonObject parent = new JsonObject();
         JsonArray childArray = new JsonArray();
         for (int i = 0; i < regExp.size(); i++) {
             JsonObject child_expresion = new JsonObject();
-            child_expresion.addProperty("regex", regExp.get(i).getRegexp());
-            child_expresion.addProperty("replacement", regExp.get(i).getReplacement());
+            child_expresion.addProperty("regex", serialized ? regExp.get(i).getSerializedRegexp() : regExp.get(i).getRegexp());
+            child_expresion.addProperty("replacement", serialized ? regExp.get(i).getSerializedReplacement() : regExp.get(i).getReplacement());
             childArray.add(child_expresion);
         }
         parent.add(group, childArray);
-        parent.toString();
 
         // try-with-resources statement based on post comment below :)
         FileWriter file = new FileWriter(fileName);
