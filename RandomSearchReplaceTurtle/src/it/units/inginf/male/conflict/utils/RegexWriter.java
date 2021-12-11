@@ -19,12 +19,13 @@ package it.units.inginf.male.conflict.utils;
 import com.google.gson.Gson;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
-import it.units.inginf.male.conflict.model.Conflict;
 import it.units.inginf.male.conflict.model.Regexp;
+import it.units.inginf.male.utils.Pair;
 
 import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * @author dotpolimi
@@ -125,10 +126,9 @@ public class RegexWriter {
     private static void update(String fileName, String group, List<Regexp> regExp, boolean serialized) throws IOException {
         FileInputStream fis = null;
         InputStreamReader isr = null; //new InputStreamReader(fis);
-        JsonObject parent = null;
+        JsonObject parent;
         try {
-            List<Conflict> list = new ArrayList();
-            fis = new FileInputStream(new File(fileName));
+            fis = new FileInputStream(fileName);
             isr = new InputStreamReader(fis);
             StringBuilder sb;
             try (BufferedReader bufferedReader = new BufferedReader(isr)) {
@@ -140,10 +140,10 @@ public class RegexWriter {
             }
 
             JsonArray childArray = new JsonArray();
-            for (int i = 0; i < regExp.size(); i++) {
+            for (Regexp regexp : regExp) {
                 JsonObject child_expresion = new JsonObject();
-                child_expresion.addProperty("regex", serialized ? regExp.get(i).getSerializedRegexp() : regExp.get(i).getRegexp());
-                child_expresion.addProperty("replacement", serialized ? regExp.get(i).getSerializedReplacement() : regExp.get(i).getReplacement());
+                child_expresion.addProperty("regex", serialized ? regexp.getSerializedRegexp() : regexp.getRegexp());
+                child_expresion.addProperty("replacement", serialized ? regexp.getSerializedReplacement() : regexp.getReplacement());
                 childArray.add(child_expresion);
             }
 
@@ -154,7 +154,7 @@ public class RegexWriter {
             JsonArray conflict_group = parent.getAsJsonArray(group);
             if (conflict_group != null) {
                 //parent.remove(group);
-                parent.add(group, childArray);
+                parent.add(group, mergeJsonArray(conflict_group, childArray));
             } else {
                 parent.add(group, childArray);
             }
@@ -186,14 +186,11 @@ public class RegexWriter {
         //ConflictGroup conflictGroup;
         //List<Conflict> list = new ArrayList();
 
-        Gson gson = new Gson();
-
         JsonObject parent = new JsonObject();
         JsonObject child = new JsonObject();
         child.addProperty("regex", regexp);
         child.addProperty("replacement", replacement);
         parent.add(group, child);
-        parent.toString();
 
         // try-with-resources statement based on post comment below :)
         FileWriter file = new FileWriter(fileName);
@@ -215,10 +212,10 @@ public class RegexWriter {
 
         JsonObject parent = new JsonObject();
         JsonArray childArray = new JsonArray();
-        for (int i = 0; i < regExp.size(); i++) {
+        for (Regexp regexp : regExp) {
             JsonObject child_expresion = new JsonObject();
-            child_expresion.addProperty("regex", serialized ? regExp.get(i).getSerializedRegexp() : regExp.get(i).getRegexp());
-            child_expresion.addProperty("replacement", serialized ? regExp.get(i).getSerializedReplacement() : regExp.get(i).getReplacement());
+            child_expresion.addProperty("regex", serialized ? regexp.getSerializedRegexp() : regexp.getRegexp());
+            child_expresion.addProperty("replacement", serialized ? regexp.getSerializedReplacement() : regexp.getReplacement());
             childArray.add(child_expresion);
         }
         parent.add(group, childArray);
@@ -235,5 +232,34 @@ public class RegexWriter {
             file.flush();
             file.close();
         }
+    }
+
+    private static JsonArray mergeJsonArray(JsonArray conflictGroup, JsonArray newElements) {
+        List<Pair<String, String>> existingCrr = fromJsonArrayToCrrList(conflictGroup);
+        existingCrr.addAll(fromJsonArrayToCrrList(newElements));
+        return fromCrrListToJsonArray(existingCrr.stream().distinct().collect(Collectors.toList()));
+    }
+
+    private static List<Pair<String, String>> fromJsonArrayToCrrList(JsonArray jsonArray) {
+        List<Pair<String, String>> crrList = new ArrayList<>();
+        jsonArray.forEach(el -> {
+            JsonObject jO = el.getAsJsonObject();
+            crrList.add(new Pair<>(jO.getAsJsonPrimitive("regex").getAsString(),
+                    jO.getAsJsonPrimitive("replacement").getAsString()));
+        });
+        return crrList;
+    }
+
+
+    private static JsonArray fromCrrListToJsonArray(List<Pair<String, String>> crrList) {
+
+        JsonArray childArray = new JsonArray();
+        crrList.forEach(crr -> {
+            JsonObject child_expresion = new JsonObject();
+            child_expresion.addProperty("regex", crr.getFirst());
+            child_expresion.addProperty("replacement", crr.getSecond());
+            childArray.add(child_expresion);
+        });
+        return childArray;
     }
 }
