@@ -1,6 +1,6 @@
 /*
- * Copyright (C) 2018 Machine Learning Lab - University of Trieste, 
- * Italy (http://machinelearning.inginf.units.it/)  
+ * Copyright (C) 2018 Machine Learning Lab - University of Trieste,
+ * Italy (http://machinelearning.inginf.units.it/)
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -20,10 +20,12 @@ package it.units.inginf.male.tree.operator;
 import it.units.inginf.male.tree.DescriptionContext;
 
 /**
- *
  * @author andrea
  */
 public class NonCapturingGroup extends UnaryOperator {
+
+    public NonCapturingGroup() {
+    }
 
     @Override
     protected UnaryOperator buildCopy() {

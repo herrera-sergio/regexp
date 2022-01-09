@@ -1,6 +1,6 @@
 /*
- * Copyright (C) 2018 Machine Learning Lab - University of Trieste, 
- * Italy (http://machinelearning.inginf.units.it/)  
+ * Copyright (C) 2018 Machine Learning Lab - University of Trieste,
+ * Italy (http://machinelearning.inginf.units.it/)
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -23,13 +23,15 @@ import java.util.List;
 import java.util.Objects;
 
 /**
- *
  * @author andrea
  */
 public class RegexRange extends AbstractNode implements Leaf {
 
-    private Node parent;
     protected String value;
+    private Node parent;
+
+    public RegexRange() {
+    }
 
     public RegexRange(String value) {
         this.value = value;
@@ -66,6 +68,14 @@ public class RegexRange extends AbstractNode implements Leaf {
         this.parent = parent;
     }
 
+    public String getValue() {
+        return value;
+    }
+
+    public void setValue(String value) {
+        this.value = value;
+    }
+
     @Override
     public List<Node> getChildrens() {
         return Collections.<Node>emptyList();
@@ -73,6 +83,7 @@ public class RegexRange extends AbstractNode implements Leaf {
 
     /**
      * Valido solo se sono all'interno di ListMatch o ListNotMatch
+     *
      * @return
      */
     @Override
@@ -107,6 +118,6 @@ public class RegexRange extends AbstractNode implements Leaf {
         }
         return true;
     }
-    
-    
+
+
 }

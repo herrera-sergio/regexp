@@ -25,6 +25,9 @@ import it.units.inginf.male.tree.DescriptionContext;
  */
 public class Concatenator extends BinaryOperator {
 
+    public Concatenator() {
+    }
+
     @Override
     protected BinaryOperator buildCopy() {
         return new Concatenator();
