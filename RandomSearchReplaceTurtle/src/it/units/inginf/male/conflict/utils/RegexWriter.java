@@ -31,6 +31,9 @@ import java.util.stream.Collectors;
  * @author dotpolimi
  */
 public class RegexWriter {
+
+    private static final int MAX_RESULT = 8;
+
     public static void save(String fileName, String group, String regexp, String replacement) throws IOException {
         //ConflictGroup conflictGroup;
         //List<Conflict> list = new ArrayList();
@@ -236,6 +239,12 @@ public class RegexWriter {
 
     private static JsonArray mergeJsonArray(JsonArray conflictGroup, JsonArray newElements) {
         List<Pair<String, String>> existingCrr = fromJsonArrayToCrrList(conflictGroup);
+
+        int i = 0;
+        while(existingCrr.size() + newElements.size() > MAX_RESULT) {
+            existingCrr.remove(i);
+            i++;
+        }
         existingCrr.addAll(fromJsonArrayToCrrList(newElements));
         return fromCrrListToJsonArray(existingCrr.stream().distinct().collect(Collectors.toList()));
     }
