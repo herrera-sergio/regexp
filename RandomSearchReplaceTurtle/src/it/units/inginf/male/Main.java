@@ -43,6 +43,7 @@ import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
+import java.util.Random;
 import java.util.logging.FileHandler;
 import java.util.logging.Logger;
 
@@ -50,6 +51,8 @@ import java.util.logging.Logger;
  * @author Marco
  */
 public class Main {
+
+    private static final float EXPLORATION_EXPLOITATION = 0.3F;
 
     /**
      * @param args the command line argumentsRandomSearchReplaceTurtle_ukkonen_recycle.jar
@@ -157,7 +160,7 @@ public class Main {
         //give the path of the modified
         //check if a solution for this group already exists and load the proper configuration
         Configuration configuration;
-        if (RegexReader.exists(prop.getProperty("regex_tree_file"), groupId))
+        if (RegexReader.exists(prop.getProperty("regex_tree_file"), groupId) && new Random().nextFloat() > EXPLORATION_EXPLOITATION)
             configuration = Configurator.configure(prop.getProperty("regex_configuration_performance"), prop.getProperty("dataset_file"), group, prop);
         else
             configuration = Configurator.configure(prop.getProperty("regex_configuration"), prop.getProperty("dataset_file"), group, prop);
