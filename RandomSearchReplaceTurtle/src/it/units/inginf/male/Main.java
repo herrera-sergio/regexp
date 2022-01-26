@@ -52,7 +52,7 @@ import java.util.logging.Logger;
  */
 public class Main {
 
-    private static final float EXPLORATION_EXPLOITATION = 0.3F;
+    private static final float EXPLORATION_EXPLOITATION = 0.33F;
 
     /**
      * @param args the command line argumentsRandomSearchReplaceTurtle_ukkonen_recycle.jar
