@@ -201,7 +201,7 @@ public class Utils {
         // Performing prefix trimming
         // We can linearly drop prefix common to both strings since they
         // don't increase distance at all
-        var tStart = 0;
+        int tStart = 0;
         while (tStart < aLen && a.charAt(tStart) == b.charAt(tStart)) {
             tStart++;
         }
@@ -227,7 +227,7 @@ public class Utils {
         int arrayLength = dLen + ZERO_K * 2 + 2;
         int[] currentRow = new int[arrayLength];
         int[] nextRow = new int[arrayLength];
-        for (var i = 0; i < arrayLength; i++) {
+        for (int i = 0; i < arrayLength; i++) {
             currentRow[i] = -1;
             nextRow[i] = -1;
         }
@@ -247,12 +247,12 @@ public class Utils {
         }
 
         i = 0;
-        var conditionRow = dLen + ZERO_K;
-        var endMax = conditionRow << 1;
+        int conditionRow = dLen + ZERO_K;
+        int endMax = conditionRow << 1;
         do {
             i++;
 
-            var tmp = currentRow;
+            int[] tmp = currentRow;
             currentRow = nextRow;
             nextRow = tmp;
 
