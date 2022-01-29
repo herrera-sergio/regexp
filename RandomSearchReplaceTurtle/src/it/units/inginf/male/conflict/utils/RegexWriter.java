@@ -155,8 +155,8 @@ public class RegexWriter {
             //ConflictGroup group = gson.fromJson(json, ConflictGroup.class);
             parent = gson.fromJson(json, JsonObject.class);
             JsonArray conflict_group = parent.getAsJsonArray(group);
-            if (conflict_group != null) {
-                //parent.remove(group);
+
+            if (conflict_group != null && serialized) {
                 parent.add(group, mergeJsonArray(conflict_group, childArray));
             } else {
                 parent.add(group, childArray);
