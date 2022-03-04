@@ -28,6 +28,7 @@ import it.units.inginf.male.inputs.ExampleReplace;
 import it.units.inginf.male.tree.Node;
 import it.units.inginf.male.utils.Utils;
 
+import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
 import java.util.logging.Level;
@@ -63,12 +64,15 @@ public class EditSearchRecallComplexityObjective implements Objective {
             fitnessComplex = Utils.complexityRegex(individualForest.get(0), true) + Utils.complexityReplace(individualForest.get(1));
             int missedChangedTotal = 0;
             int changedTotal = 0;
+            long levenstheinTot = 0;
             for (int exampleIndex = 0; exampleIndex < dataSetView.getNumberExamples(); exampleIndex++) {
                 ExampleReplace example = dataSetView.getExample(exampleIndex);
                 ReplaceResult replaceOutcome = evaluate.get(exampleIndex);
                 String outcome = replaceOutcome.getReplacedString();
+                long startLev = System.nanoTime();
                 fitnessEdit += Utils.computeLevenshteinDistance(example.targetString,outcome);
-                
+                levenstheinTot += System.nanoTime()-startLev;
+
                 //Recall part
                 Bounds changedBoundsInString = example.getChangedBeforeAndAfterBounds();
                 if(changedBoundsInString==null){
@@ -80,7 +84,8 @@ public class EditSearchRecallComplexityObjective implements Objective {
                 missedChangedTotal+=missed;
                 changedTotal += changedBoundsInString.size();
             }
-            fitnessSearchRecall = ((double)missedChangedTotal)/changedTotal;  
+           context.addPerformanceEntry("lev", levenstheinTot);
+            fitnessSearchRecall = ((double)missedChangedTotal)/changedTotal;
 
         } catch (TreeEvaluationException ex) {
             Logger.getLogger(EditSearchRecallComplexityObjective.class.getName()).log(Level.SEVERE, null, ex);

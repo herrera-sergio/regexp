@@ -1,6 +1,6 @@
 /*
- * Copyright (C) 2018 Machine Learning Lab - University of Trieste, 
- * Italy (http://machinelearning.inginf.units.it/)  
+ * Copyright (C) 2018 Machine Learning Lab - University of Trieste,
+ * Italy (http://machinelearning.inginf.units.it/)
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -25,26 +25,10 @@ import it.units.inginf.male.tree.Node;
 import it.units.inginf.male.tree.RegexRange;
 import it.units.inginf.male.tree.operator.Concatenator;
 import it.units.inginf.male.tree.operator.Quantifier;
+import org.apache.commons.text.diff.StringsComparator;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.OutputStreamWriter;
-import java.io.Writer;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Objects;
-import java.util.Queue;
-import java.util.Set;
-import java.util.TreeSet;
+import java.io.*;
+import java.util.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -64,6 +48,8 @@ public class Utils {
     public static final String ANSI_WHITE = "\u001B[37m";
 
     private static final List<String> colors = Arrays.asList(ANSI_GREEN, ANSI_PURPLE, ANSI_CYAN, ANSI_RED);
+    private static transient final Set<Character> quoteList = new TreeSet<Character>(
+            Arrays.asList(new Character[]{'?', '+', '*', '.', '[', ']', '\\', '$', '(', ')', '^', '{', '|', '-', '&'}));
 
     public static String getCoolForestRapresentation(Forest forest) {
         StringBuilder sb = new StringBuilder();
@@ -84,6 +70,10 @@ public class Utils {
             return regex.substring(0, 64) + " [..]" + ANSI_RESET;
         }
         return regex;
+    }
+
+    public static int computeMyersDiff(String s, String t) {
+        return new StringsComparator(s, t).getScript().getModifications();
     }
 
     public static int computeLevenshteinDistance(String s, String t) {
@@ -247,9 +237,9 @@ public class Utils {
         return 100 * (double) newRegexesCount / (double) populationB.size();
     }
 
-    //remove empty extractions 
+    //remove empty extractions
     public static void removeEmptyExtractions(List<Bounds> extractions) {
-        for (Iterator<Bounds> it = extractions.iterator(); it.hasNext();) {
+        for (Iterator<Bounds> it = extractions.iterator(); it.hasNext(); ) {
             Bounds bounds = it.next();
             if (bounds.size() == 0) {
                 it.remove();
@@ -277,9 +267,6 @@ public class Utils {
         String pre = (si ? "kMGTPE" : "KMGTPE").charAt(exp - 1) + (si ? "" : "i");
         return String.format("%.1f %sB", bytes / Math.pow(unit, exp), pre);
     }
-
-    private static transient final Set<Character> quoteList = new TreeSet<Character>(
-            Arrays.asList(new Character[]{'?', '+', '*', '.', '[', ']', '\\', '$', '(', ')', '^', '{', '|', '-', '&'}));
 
     /**
      * Returns a set with all n-grams; 1<n<4
@@ -429,7 +416,7 @@ public class Utils {
         });
 
         //filter
-        for (Iterator<Pair<Bounds, Bounds>> iterator = mappings.iterator(); iterator.hasNext();) {
+        for (Iterator<Pair<Bounds, Bounds>> iterator = mappings.iterator(); iterator.hasNext(); ) {
             Pair<Bounds, Bounds> next = iterator.next();
             Bounds sourcePiece = next.getFirst();
             Bounds targetPiece = next.getSecond();
