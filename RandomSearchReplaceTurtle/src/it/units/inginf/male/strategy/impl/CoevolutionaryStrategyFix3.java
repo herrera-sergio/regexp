@@ -1,6 +1,6 @@
 /*
- * Copyright (C) 2018 Machine Learning Lab - University of Trieste, 
- * Italy (http://machinelearning.inginf.units.it/)  
+ * Copyright (C) 2018 Machine Learning Lab - University of Trieste,
+ * Italy (http://machinelearning.inginf.units.it/)
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -14,8 +14,10 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
- */package it.units.inginf.male.strategy.impl;
+ */
+package it.units.inginf.male.strategy.impl;
 
+import it.units.inginf.male.coevolution.Forest;
 import it.units.inginf.male.configuration.Configuration;
 import it.units.inginf.male.configuration.EvolutionParameters;
 import it.units.inginf.male.configuration.SubConfiguration;
@@ -24,7 +26,6 @@ import it.units.inginf.male.generations.Generation;
 import it.units.inginf.male.generations.InitialPopulationBuilder;
 import it.units.inginf.male.generations.Ramped;
 import it.units.inginf.male.inputs.Context;
-import it.units.inginf.male.coevolution.Forest;
 import it.units.inginf.male.objective.Objective;
 import it.units.inginf.male.objective.Ranking;
 import it.units.inginf.male.objective.performance.PerformancesFactory;
@@ -38,10 +39,12 @@ import it.units.inginf.male.utils.UniqueList;
 import it.units.inginf.male.utils.Utils;
 import it.units.inginf.male.variations.Variation;
 
+import java.io.FileWriter;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 //Added elitarism but moderated to 50% individuals
+
 /**
  * In case of re-start of all the experiment, YOU HAVE to set the stopSignal
  * variable to default FALSE!! This is not going to be automatically reset to
@@ -49,13 +52,15 @@ import java.util.concurrent.atomic.AtomicBoolean;
  */
 public class CoevolutionaryStrategyFix3 implements RunStrategy {
 
+    private static final AtomicBoolean stopSignal = new AtomicBoolean(false);
     protected Context context;
+    protected Selection selection;
+    protected Objective objective;
+    protected double elitarismPopulationRatio = 0.4;
+    protected double elitarismForestRatio = 1;
     private List<List<Node>> populations;
     private List<Ranking> rankings;
     private List<List<Ranking>> subRankings;
-
-    protected Selection selection;
-    protected Objective objective;
     private Variation variation;
     private ExecutionListener listener;
     //Termination criteria enables/disables the premature termination of thread when best regex/individual doesn't change for
@@ -66,10 +71,21 @@ public class CoevolutionaryStrategyFix3 implements RunStrategy {
     private int maxGenerations;
     private Objective learningObjective;
     private int tournamentSize = 7;
-    private static final AtomicBoolean stopSignal = new AtomicBoolean(false);
 
-    protected double elitarismPopulationRatio = 0.4;
-    protected double elitarismForestRatio = 1;
+    public CoevolutionaryStrategyFix3() {
+
+    }
+
+    /**
+     * In case of restart of all the experiment, YOU HAVE to set this variable
+     * to FALSE!! This is not going to be automatically reset to FALSE at
+     * experiment stop.
+     *
+     * @return
+     */
+    public static AtomicBoolean getStopSignal() {
+        return stopSignal;
+    }
 
     @Override
     public void setup(Configuration configuration, ExecutionListener listener) throws TreeEvaluationException {
@@ -122,6 +138,7 @@ public class CoevolutionaryStrategyFix3 implements RunStrategy {
     @Override
     public Void call() throws TreeEvaluationException {
         try {
+
             int generation;
             listener.evolutionStarted(this);
             int p = 0;
@@ -149,6 +166,7 @@ public class CoevolutionaryStrategyFix3 implements RunStrategy {
             double[] oldGenerationBestValue = null;
             int terminationCriteriaGenerationsCounter = 0;
             boolean allPerfect = false;
+            long startCall = System.nanoTime();
             for (generation = 0; generation < maxGenerations; generation++) {
 
                 evolve();
@@ -195,8 +213,10 @@ public class CoevolutionaryStrategyFix3 implements RunStrategy {
                 if (stopSignal.get() || Thread.interrupted()) {
                     break;
                 }
-
             }
+
+            context.addPerformanceEntry("total", System.nanoTime()-startCall);
+            context.writePerformanceFile();
 
             if (listener != null) {
                 listener.evolutionComplete(this, generation - 1, rankings.get(0).getTree(), this.rankings);
@@ -224,20 +244,27 @@ public class CoevolutionaryStrategyFix3 implements RunStrategy {
         }
 
         List<List<Node>> newPopulations = new ArrayList<>();
-
+        long startEvolve = System.nanoTime();
         for (int i = 0; i < populations.size(); i++) {
             List<Node> population = populations.get(i);
             List<Node> newPopulation = generateNewPopulation(population, i, subRankings.get(i), elitarismPopulationRatio);
             //newPopulation.addAll(population);
             newPopulations.add(newPopulation);
         }
+        context.addPerformanceEntry("evolve", System.nanoTime() - startEvolve);
 
+        long startFitPareto = System.nanoTime();
         List<Ranking> tmp = buildRankings(newPopulations, objective, elitarismForestRatio);
+        long startPareto = System.nanoTime();
         sortRankings(tmp, rankings);
+        context.addPerformanceEntry("pareto", System.nanoTime() - startPareto);
+        context.addPerformanceEntry("fit_pareto", System.nanoTime() - startFitPareto);
+
         subRankings = splitRanking(rankings);
         //System.out.println("***Sub-ranking size, search: "+subRankings.get(0).size()+" replace: "+subRankings.get(1).size());
 
         int maxPopSize = 0;
+
         for (int i = 0; i < populations.size(); i++) {
             EvolutionParameters params = getConfiguration().getSubConfiguration(i).getEvolutionParameters();
             int targetPopsize = params.getPopulationSize();//population.size();
@@ -258,6 +285,7 @@ public class CoevolutionaryStrategyFix3 implements RunStrategy {
             List<Node> generated = ramped.generate(targetPopsize - population.size(), i);
             population.addAll(generated);
         }
+
 
         rankings = rankings.subList(0, Math.min(maxPopSize, rankings.size()));
 
@@ -388,15 +416,5 @@ public class CoevolutionaryStrategyFix3 implements RunStrategy {
         return this.context;
     }
 
-    /**
-     * In case of restart of all the experiment, YOU HAVE to set this variable
-     * to FALSE!! This is not going to be automatically reset to FALSE at
-     * experiment stop.
-     *
-     * @return
-     */
-    public static AtomicBoolean getStopSignal() {
-        return stopSignal;
-    }
 
 }

@@ -71,6 +71,8 @@ public class Utils {
         return regex;
     }
 
+
+
     public static int computeLevenshteinDistance(String s, String t) {
         if (s == null || t == null) {
             throw new IllegalArgumentException("Strings must not be null s: " + s + " t: " + t);
@@ -564,7 +566,7 @@ public class Utils {
         return mappings;
     }
 
-    public static double complexityRegex(Node node, boolean pushGeneralization) {
+    public static double  complexityRegex(Node node, boolean pushGeneralization) {
         int quantifierWeigth = pushGeneralization ? 6 : 10;
         int charClassWeight = pushGeneralization ? 8 : 10;
         Queue<Node> currentNodes = new LinkedList<>();

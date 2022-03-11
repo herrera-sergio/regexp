@@ -1,6 +1,6 @@
 /*
- * Copyright (C) 2018 Machine Learning Lab - University of Trieste, 
- * Italy (http://machinelearning.inginf.units.it/)  
+ * Copyright (C) 2018 Machine Learning Lab - University of Trieste,
+ * Italy (http://machinelearning.inginf.units.it/)
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -14,7 +14,8 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
- */package it.units.inginf.male.objective;
+ */
+package it.units.inginf.male.objective;
 
 import it.units.inginf.male.coevolution.Forest;
 import it.units.inginf.male.evaluators.CoevolutionaryEvaluator;
@@ -47,6 +48,8 @@ public class EditSearchRecallComplexityObjective implements Objective {
 
     @Override
     public double[] fitness(Node individual) {
+
+        long startFit = System.nanoTime();
         DataSetReplace dataSetView = this.context.getCurrentDataSet();
         ReplaceEvaluator evaluator = (ReplaceEvaluator) context.getConfiguration().getEvaluator();
         double[] fitness = new double[3];
@@ -54,33 +57,48 @@ public class EditSearchRecallComplexityObjective implements Objective {
         double fitnessComplex;
         double fitnessEdit = 0;
         double fitnessSearchRecall = 0;
-        
-        
+
         List<ReplaceResult> evaluate;
         try {
-            Forest individualForest = (Forest)individual; 
+            Forest individualForest = (Forest) individual;
+            long startEv = System.nanoTime();
             evaluate = evaluator.evaluate(individualForest, context);
+            context.addPerformanceEntry("evaluate", System.nanoTime() - startFit);
+
+
+            long startFComp = System.nanoTime();
             fitnessComplex = Utils.complexityRegex(individualForest.get(0), true) + Utils.complexityReplace(individualForest.get(1));
+            context.addPerformanceEntry("f_comp", System.nanoTime() - startFComp);
+
             int missedChangedTotal = 0;
             int changedTotal = 0;
+            long levenstheinTot = 0;
+            long fRecTot = 0;
             for (int exampleIndex = 0; exampleIndex < dataSetView.getNumberExamples(); exampleIndex++) {
                 ExampleReplace example = dataSetView.getExample(exampleIndex);
                 ReplaceResult replaceOutcome = evaluate.get(exampleIndex);
                 String outcome = replaceOutcome.getReplacedString();
+                long startLev = System.nanoTime();
                 fitnessEdit += Utils.computeUkkonenDistance(example.targetString,outcome, Math.max(example.targetString.length(), outcome.length()));
-                
+                levenstheinTot += System.nanoTime() - startLev;
+
+                long startFRec = System.nanoTime();
                 //Recall part
                 Bounds changedBoundsInString = example.getChangedBeforeAndAfterBounds();
-                if(changedBoundsInString==null){
+                if (changedBoundsInString == null) {
                     changedBoundsInString = new Bounds(0, 0);
                 }
                 Bounds searchBounds = replaceOutcome.getBounds();
                 int overlappingCharsNumber = searchBounds.getOverlappingCharsNumber(changedBoundsInString);
                 int missed = changedBoundsInString.size() - overlappingCharsNumber;
-                missedChangedTotal+=missed;
+                missedChangedTotal += missed;
                 changedTotal += changedBoundsInString.size();
+                fRecTot += System.nanoTime() - startFRec;
             }
-            fitnessSearchRecall = ((double)missedChangedTotal)/changedTotal;  
+            context.addPerformanceEntry("lev", levenstheinTot);
+            fitnessSearchRecall = ((double) missedChangedTotal) / changedTotal;
+            context.addPerformanceEntry("f_rec", fRecTot);
+            context.addPerformanceEntry("fit", System.nanoTime() - startFit);
 
         } catch (TreeEvaluationException ex) {
             Logger.getLogger(EditSearchRecallComplexityObjective.class.getName()).log(Level.SEVERE, null, ex);
@@ -89,7 +107,7 @@ public class EditSearchRecallComplexityObjective implements Objective {
         }
 
         fitness[0] = fitnessEdit;
-        fitness[1] = fitnessSearchRecall;       
+        fitness[1] = fitnessSearchRecall;
         fitness[2] = fitnessComplex;
 
         return fitness;
