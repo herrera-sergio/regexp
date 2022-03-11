@@ -25,8 +25,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Random;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 /**
  * @author andrea
@@ -43,6 +41,7 @@ public class Context {
     private Configuration configuration;
     private FileWriter csvWriter;
     private long seed;
+
     public Context(EvaluationPhases phase, final Configuration configuration) {
         this.phase = phase;
         this.configuration = configuration;
@@ -51,12 +50,8 @@ public class Context {
     }
 
     public void addPerformanceEntry(String name, Long value) {
-        if (name.equals("lev"))
-            dataLines.add(new String[]
-                    { name,"", Long.toString(value)});
-        else
-            dataLines.add(new String[]
-                    {name, Long.toString(value)});
+        dataLines.add(new String[]
+                {name, Long.toString(value)});
     }
 
     private String convertToCSV(String[] data) {
@@ -65,7 +60,7 @@ public class Context {
 
     public void writePerformanceFile() throws FileNotFoundException {
         File csvOutputFile = new File("new" + getSeed() + ".csv");
-        try (PrintWriter pw = new PrintWriter(new FileOutputStream(csvOutputFile, true))){
+        try (PrintWriter pw = new PrintWriter(new FileOutputStream(csvOutputFile, true))) {
             dataLines.stream()
                     .map(this::convertToCSV)
                     .forEach(pw::println);

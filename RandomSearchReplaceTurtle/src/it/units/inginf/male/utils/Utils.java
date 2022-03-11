@@ -25,7 +25,7 @@ import it.units.inginf.male.tree.Node;
 import it.units.inginf.male.tree.RegexRange;
 import it.units.inginf.male.tree.operator.Concatenator;
 import it.units.inginf.male.tree.operator.Quantifier;
-import org.apache.commons.text.diff.StringsComparator;
+
 
 import java.io.*;
 import java.util.*;
@@ -72,9 +72,7 @@ public class Utils {
         return regex;
     }
 
-    public static int computeMyersDiff(String s, String t) {
-        return new StringsComparator(s, t).getScript().getModifications();
-    }
+
 
     public static int computeLevenshteinDistance(String s, String t) {
         if (s == null || t == null) {
@@ -439,7 +437,7 @@ public class Utils {
         return mappings;
     }
 
-    public static double complexityRegex(Node node, boolean pushGeneralization) {
+    public static double  complexityRegex(Node node, boolean pushGeneralization) {
         int quantifierWeigth = pushGeneralization ? 6 : 10;
         int charClassWeight = pushGeneralization ? 8 : 10;
         Queue<Node> currentNodes = new LinkedList<>();

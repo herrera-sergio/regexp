@@ -244,18 +244,22 @@ public class CoevolutionaryStrategyFix3 implements RunStrategy {
         }
 
         List<List<Node>> newPopulations = new ArrayList<>();
-
+        long startEvolve = System.nanoTime();
         for (int i = 0; i < populations.size(); i++) {
             List<Node> population = populations.get(i);
             List<Node> newPopulation = generateNewPopulation(population, i, subRankings.get(i), elitarismPopulationRatio);
             //newPopulation.addAll(population);
             newPopulations.add(newPopulation);
         }
+        context.addPerformanceEntry("evolve", System.nanoTime() - startEvolve);
 
-        long startRanking = System.nanoTime();
+        long startFitPareto = System.nanoTime();
         List<Ranking> tmp = buildRankings(newPopulations, objective, elitarismForestRatio);
-        context.addPerformanceEntry("buildRanking", System.nanoTime() - startRanking);
+        long startPareto = System.nanoTime();
         sortRankings(tmp, rankings);
+        context.addPerformanceEntry("pareto", System.nanoTime() - startPareto);
+        context.addPerformanceEntry("fit_pareto", System.nanoTime() - startFitPareto);
+
         subRankings = splitRanking(rankings);
         //System.out.println("***Sub-ranking size, search: "+subRankings.get(0).size()+" replace: "+subRankings.get(1).size());
 
