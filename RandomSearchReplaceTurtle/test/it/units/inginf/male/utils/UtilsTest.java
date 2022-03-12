@@ -21,7 +21,6 @@ import it.units.inginf.male.tree.Constant;
 import it.units.inginf.male.tree.Node;
 import it.units.inginf.male.tree.operator.Concatenator;
 import it.units.inginf.male.tree.operator.MatchOneOrMore;
-import org.apache.commons.text.similarity.FuzzyScore;
 import org.junit.Test;
 
 import java.nio.charset.StandardCharsets;
@@ -49,18 +48,11 @@ public class UtilsTest {
         assertEquals(1,Utils.computeLevenshteinDistance("prova","prxva"));
         assertEquals(0,Utils.computeLevenshteinDistance("",""));
 
-        FuzzyScore fuzzyScore = new FuzzyScore(Locale.ENGLISH);
-        long startFuzzy = System.nanoTime();
-        System.out.println(fuzzyScore.fuzzyScore("prov", "provaty"));
-        long timeFuzzy = System.nanoTime() - startFuzzy;
 
         long startLevensthein = System.nanoTime();
         System.out.println(Utils.computeLevenshteinDistance("provaxjksdnvjksndjkvnsjknvvjkkbvsdbjvsiosfioahiofhdiohfdifhsdiohfiosdhfiosdhfiohsdiofhsdhijkbvsdjkbvjksdbvjksbvjksbdxxprovaxjksdnvjksndjkvnsjknvvjkkbvsdbjvsiosfioahiofhdiohfdifhsdiohfiosdhfiosdhfiohsdiofhsdhijkbvsdjkbvjksdbvjksbvjksbdxx","provayy"));
         long timeLevensthein = System.nanoTime() - startLevensthein;
 
-        System.out.println("Fuzzy " +  timeFuzzy);
-        System.out.println("Levensthein " + timeLevensthein);
-        System.out.println("TIME DIFFERENCE " + (timeLevensthein - timeFuzzy));
     }
 
     @Test

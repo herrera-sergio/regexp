@@ -75,7 +75,7 @@ public class Configurator {
         int testingUpperLimit=0;
             
         
-    //    System.out.println("Conflict Group Size: -------------"+conflictGroup.getConflicts().size());
+        System.out.println("Conflict Group Size: -------------"+conflictGroup.getConflicts().size());
         if(conflictGroup.getConflicts().size()<=3){
             training.add(new Range(0,0));
             configuration.getDatasetContainer().setTraining(training);

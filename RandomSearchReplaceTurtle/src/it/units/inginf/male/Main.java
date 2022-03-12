@@ -70,7 +70,7 @@ public class Main {
                 //Call the createTrainingCVS method
                 group=ConflictReader.load(prop.getProperty("conflict_file"), groupId);
 
-//                System.out.println("Conflict Group: "+group.toString());
+               System.out.println("Conflict Group: "+group.toString());
 
                 ConflictWriter.write(prop.getProperty("dataset_file"), group);
             }
