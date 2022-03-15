@@ -54,6 +54,12 @@ public class Context {
                 {name, Long.toString(value)});
     }
 
+
+    public void addStatsEntry(String name, Double value) {
+        dataLines.add(new String[]
+                {name, Double.toString(value)});
+    }
+
     private String convertToCSV(String[] data) {
         return String.join(",", data);
     }

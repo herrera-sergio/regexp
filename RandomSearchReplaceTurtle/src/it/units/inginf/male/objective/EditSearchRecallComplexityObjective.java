@@ -81,7 +81,7 @@ public class EditSearchRecallComplexityObjective implements Objective {
                 long startLev = System.nanoTime();
                 fitnessEdit += Utils.computeUkkonenDistance(example.targetString,outcome, Math.max(example.targetString.length(), outcome.length()));
                 levenstheinTot += System.nanoTime() - startLev;
-
+                context.addStatsEntry("lev_sim", 1 - ((double)Utils.computeUkkonenDistance(example.targetString,outcome, Math.max(example.targetString.length(), outcome.length()))/(Math.max(example.targetString.length(), outcome.length()))));
                 long startFRec = System.nanoTime();
                 //Recall part
                 Bounds changedBoundsInString = example.getChangedBeforeAndAfterBounds();
